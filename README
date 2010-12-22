@@ -1,0 +1,49 @@
+JHU Turbulence Database Cluster
+Matlab Interface Library
+http://turbulence.pha.jhu.edu/
+
+**** About this package ****
+
+This library provides a very simple wrapper around Matlab
+intrinsic SOAP functions for calling the JHU Turbulence 
+Database Cluster.
+
+More information can be found at:
+  http://turbulence.pha.jhu.edu/help/
+
+This package can be executed directly from Matlab. All
+communication with the JHU Turbulence Database Cluster
+is provided through the TurbulenceService Matlab class
+which uses the Matlab intrinsic SOAP functions. As of 
+now only the getVelocity function is provided; functionality
+for additional functions will be added sometime in the
+near future.
+
+**** How to use ****
+
+A sample program is provided in turbm2.m. Using the 
+default settings it will probe 32 points in the x and y
+directions at a random z location and return the velocity.
+The u-velocity component will be returned and displayed 
+in a contour plot. This sample file can be modified to
+the end users needs.
+
+**** Identification Token (required for large queries) ****
+
+While our service is open to anyone, we would like to keep track
+of who is using the service, and how.  To this end, we would
+like each user or site to obtain an authorization token from us:
+  http://turbulence.pha.jhu.edu/help/authtoken.html
+
+If you are just experimenting, the default token included in
+these test files should be valid.
+
+**** Platform-specific notes ****
+
+Has been tested on newer Windows, Mac, and Linux Matlab installations.
+
+**** Error Handling ****
+
+Not directly implemented yet. 
+
+$Id: README,v 1.10 2010-03-10 04:09:00 eric Exp $
