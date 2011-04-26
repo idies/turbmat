@@ -1,4 +1,4 @@
-function getVelocityResult = getVelocity(authToken,dataset,time,spatialInterpolation, ...
+function result = getVelocity(authToken,dataset,time,spatialInterpolation, ...
                                              temporalInterpolation,npoints, points)
 %GetVelocity(obj,authToken,dataset,time,spatialInterpolation,temporalInterpolation,points)
 %
@@ -46,6 +46,6 @@ result3 =  GetVelocity (obj, authToken, dataset, time, ...
    
 clear struct_points;
 
-getVelocityResult = cellfun(@str2num,struct2cell(result3.Vector3));
+result = cellfun(@str2num,struct2cell(result3.Vector3));
 
 return
