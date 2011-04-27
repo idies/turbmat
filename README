@@ -4,24 +4,18 @@ http://turbulence.pha.jhu.edu/
 
 **** About this package ****
 
-This library provides a very simple wrapper around Matlab
+This set of functions provide a wrapper around Matlab
 intrinsic SOAP functions for calling the JHU Turbulence 
-Database Cluster.
+Database Cluster. All communication with the JHU Turbulence 
+Database Cluster is provided through the TurbulenceService 
+Matlab class which uses the Matlab intrinsic SOAP functions.
 
 More information can be found at:
   http://turbulence.pha.jhu.edu/help/
 
-This package can be executed directly from Matlab. All
-communication with the JHU Turbulence Database Cluster
-is provided through the TurbulenceService Matlab class
-which uses the Matlab intrinsic SOAP functions. As of 
-now only the getVelocity function is provided; functionality
-for additional functions will be added sometime in the
-near future.
-
 **** How to use ****
 
-A sample program is provided in turbm2.m. Using the 
+A sample program is provided in turbm.m. Using the 
 default settings it will probe 32 points in the x and y
 directions at a random z location and return the velocity.
 The u-velocity component will be returned and displayed 
