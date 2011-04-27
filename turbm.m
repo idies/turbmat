@@ -4,10 +4,10 @@
 clear all;
 close all;
 
-authkey = 'edu.jhu.jgraha34-857fbf6f';
+authkey = 'edu.jhu.pha.turbulence.testing-200910';
 dataset = 'isotropic1024coarse';
 
-% Generates TurbulenceService:
+% Generates TurbulenceService object
 %createClassFromWsdl('http://turbulence.pha.jhu.edu/service/turbulence.asmx?WSDL')
 
 % ---- Temporal Interpolation Options ----
@@ -26,10 +26,11 @@ FD6NoInt = 'None_Fd6' ; % 6th order finite differential scheme for grid values, 
 FD8NoInt = 'None_Fd8' ; % 8th order finite differential scheme for grid values, no spatial interpolation
 FD4Lag4  = 'Fd4Lag4'  ; % 4th order finite differential scheme for grid values, 4th order Lagrangian interpolation in space
 
+%  Set time step to sample
 timestep = 182;
 time = 0.002 * timestep;
 
-npoints = 100;
+npoints = 10;
 
 points = zeros(3,npoints);
 result1 = zeros(npoints);
@@ -39,6 +40,7 @@ result6 = zeros(6,npoints);
 result9 = zeros(9,npoints);
 result18 = zeros(18,npoints);
 
+%  Set spatial locations to sample
 for p = 1:npoints
   points(1,p) = 0.20 * (p-1+1);
   points(2,p) = 0.50 * (p-1+1);
@@ -100,3 +102,60 @@ for p = 1:npoints
     result6(1,p), result6(2,p), result6(3,p), ...
     result6(4,p), result6(5,p), result6(6,p));
 end
+
+% ///////////////////////////////////////////////////////////
+% ////////////// GENERATE A SIMPLE CONTOUR PLOT /////////////
+%////////////////////////////////////////////////////////////
+
+%  Chose a random time step
+timestep = randi(182,1,1);
+time = 0.002 * timestep;
+
+%  Set 
+nx = 32;
+ny = nx;
+
+dx = 2.0*pi/1024;
+dy = dx;
+
+npoints = nx*ny;
+
+points = zeros(3,npoints);
+result3 = zeros(3,npoints);
+result9 = zeros(9,npoints);
+
+indx=0;
+for j=1:ny
+  yt = dy*(j-1);
+  for i=1:nx
+    indx=indx+1;
+    points(1,indx) = dx*(i-1);
+    points(2,indx) = yt;
+  end
+end
+
+% Choose a random z-plane
+points(3,:) = 2 * pi * rand;
+    
+fprintf('\nRequesting velocity at %i points...\n',npoints);
+result3 =  getVelocity (authkey, dataset, time, Lag4, NoTInt, npoints, points);
+
+x = (0.0:dx:(nx-1)*dx);
+y = (0.0:dy:(ny-1)*dy);
+
+%  Roll up velocity title({'Filled Contour Plot Using','contourf(Z,10)'}) 
+vel_mag = zeros(nx,ny);
+indx=0;
+for j=1:ny
+    for i=1:nx
+        indx=indx+1;
+        vel = result3(:,indx);
+        vel_mag(i,j) = sqrt(sum(vel.*vel));
+    end
+end
+
+clear result3;
+hold on
+contourf(x,y,vel_mag,'LineStyle','none');
+title('Velocity Magnitude');
+colorbar;
