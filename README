@@ -40,3 +40,13 @@ Has been tested on newer Windows, Mac, and Linux Matlab installations.
 
 Not directly implemented yet. 
 
+**** Known Issues ****
+
+1) When retrieving large amounts of data, the heap memory of
+   Matlab's Java Virtual Machine may overflow. It is then
+   requirted to increase the Java heap memory. For additional
+   information please see 
+
+   http://www.mathworks.com/support/solutions/en/data/1-18I2C/
+
+
