@@ -1,5 +1,5 @@
 %
-% Turbulence Database sample Matlab client code
+% JHU Turbulence Database sample Matlab client code
 %
 clear all;
 close all;
@@ -32,12 +32,12 @@ time = 0.002 * timestep;
 
 npoints = 10;
 
-points = zeros(3,npoints);
-result1 = zeros(npoints);
-result3 = zeros(3,npoints);
-result4 = zeros(4,npoints);
-result6 = zeros(6,npoints);
-result9 = zeros(9,npoints);
+points   = zeros(3,npoints);
+result1  = zeros(npoints);
+result3  = zeros(3,npoints);
+result4  = zeros(4,npoints);
+result6  = zeros(6,npoints);
+result9  = zeros(9,npoints);
 result18 = zeros(18,npoints);
 
 %  Set spatial locations to sample
@@ -111,7 +111,7 @@ end
 timestep = randi(182,1,1);
 time = 0.002 * timestep;
 
-%  Set 
+%  Set domain size
 nx = 32;
 ny = nx;
 
@@ -124,12 +124,16 @@ points = zeros(3,npoints);
 result3 = zeros(3,npoints);
 result9 = zeros(9,npoints);
 
+% Choose x, y offset
+xoff = 2 * pi * rand; 
+yoff = 2 * pi * rand;
+
 indx=0;
 for j=1:ny
-  yt = dy*(j-1);
+  yt = dy*(j-1) + yoff;
   for i=1:nx
     indx=indx+1;
-    points(1,indx) = dx*(i-1);
+    points(1,indx) = dx*(i-1) + xoff;
     points(2,indx) = yt;
   end
 end
@@ -137,11 +141,14 @@ end
 % Choose a random z-plane
 points(3,:) = 2 * pi * rand;
     
+% Get the velocity at each point
 fprintf('\nRequesting velocity at %i points...\n',npoints);
 result3 =  getVelocity (authkey, dataset, time, Lag4, NoTInt, npoints, points);
 
-x = (0.0:dx:(nx-1)*dx);
-y = (0.0:dy:(ny-1)*dy);
+x = (0.0:dx:(nx-1)*dx)+xoff;
+y = (0.0:dy:(ny-1)*dy)+yoff;
+
+[X Y] = meshgrid(x,y);
 
 %  Roll up velocity title({'Filled Contour Plot Using','contourf(Z,10)'}) 
 vel_mag = zeros(nx,ny);
@@ -156,6 +163,14 @@ end
 
 clear result3;
 hold on
-contourf(x,y,vel_mag,'LineStyle','none');
+%contourf(x,y,vel_mag,'LineStyle','none');
+Z = vel_mag;
+surfc(X,Y,Z);
+shading interp;
 title('Velocity Magnitude');
+xlabel('x');
+ylabel('y');
 colorbar;
+colormap Jet
+
+
