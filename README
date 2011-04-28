@@ -1,14 +1,18 @@
 JHU Turbulence Database Cluster
-Matlab Interface Library
+Matlab Interface Functions
 http://turbulence.pha.jhu.edu/
 
 **** About this package ****
 
 This set of functions provide a wrapper around Matlab
-intrinsic SOAP functions for calling the JHU Turbulence 
+intrinsic web service functions for calling the JHU Turbulence 
 Database Cluster. All communication with the JHU Turbulence 
 Database Cluster is provided through the TurbulenceService 
-Matlab class which uses the Matlab intrinsic SOAP functions.
+Matlab class which uses the Matlab intrinsic web service
+functions to create SOAP messages, query the Turbulence
+Database, and parse the results. For each database function
+a wrapper has been created to perform the data translation and 
+retrieval. 
 
 More information can be found at:
   http://turbulence.pha.jhu.edu/help/
@@ -16,17 +20,15 @@ More information can be found at:
 **** How to use ****
 
 A sample Matlab program is provided by turbm.m. To use simply
-run this program from Matlab. In this program each the usage 
+run this program from Matlab. In this program the usage 
 of each Turbulence Database function is illustrated. The 
-program will sample each quantity (i.e., velocity, velocity 
+program will sample each quantity (i.e. velocity, velocity 
 gradient, etc.) at 10 locations. The returned values will be
 written to screen. The sample program also generates a contour 
 surface of the velocity magnitude at a random z-plane location.
 
-User specific programs may be created by 
-The u-velocity component will be returned and displayed 
-in a contour plot. This sample file can be modified to
-the end users needs.
+User specific programs may be created by simply extending the
+sample program as needed. 
 
 **** Identification Token (required for large queries) ****
 
@@ -40,12 +42,16 @@ these test files should be valid.
 
 **** Platform-specific notes ****
 
-Has been tested on newer installations of Matlab on various
+This interface been tested on newer installations of Matlab on various
 flavors of Mac OS X, Linux, and Windows.
 
 **** Error Handling ****
 
-Not directly implemented yet. 
+Error handling his performed by the Matlab SOAP communication calls. If a 
+SOAP error occurs during execution of the interface functions, all SOAP 
+error information will be display to the Matlab terminal and the execution 
+will be terminated. We do not currently provide a method for explicit error 
+handling/catching.
 
 **** Known Issues ****
 
