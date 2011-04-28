@@ -15,9 +15,15 @@ More information can be found at:
 
 **** How to use ****
 
-A sample program is provided in turbm.m. Using the 
-default settings it will probe 32 points in the x and y
-directions at a random z location and return the velocity.
+A sample Matlab program is provided by turbm.m. To use simply
+run this program from Matlab. In this program each the usage 
+of each Turbulence Database function is illustrated. The 
+program will sample each quantity (i.e., velocity, velocity 
+gradient, etc.) at 10 locations. The returned values will be
+written to screen. The sample program also generates a contour 
+surface of the velocity magnitude at a random z-plane location.
+
+User specific programs may be created by 
 The u-velocity component will be returned and displayed 
 in a contour plot. This sample file can be modified to
 the end users needs.
@@ -34,7 +40,8 @@ these test files should be valid.
 
 **** Platform-specific notes ****
 
-Has been tested on newer Windows, Mac, and Linux Matlab installations.
+Has been tested on newer installations of Matlab on various
+flavors of Mac OS X, Linux, and Windows.
 
 **** Error Handling ****
 
