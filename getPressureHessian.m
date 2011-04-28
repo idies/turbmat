@@ -1,8 +1,16 @@
+%
+%  Written by:
+%  
+%  Jason Graham
+%  The Johns Hopkins University
+%  Department of Mechanical Engineering
+%  jgraha8@gmail.com
+%
+
 function result = getPressureHessian(authToken,dataset,time,spatialInterpolation, ...
                                      temporalInterpolation,npoints, points)			     
-%GetVelocity(obj,authToken,dataset,time,spatialInterpolation,temporalInterpolation,points)
 %
-%   Spatially interpolate the velocity at a number of points for a given time.
+%     Retrieve pressure hessian for specified 'time' and 'points'
 %   
 %     Input:
 %       authToken = (string)
@@ -15,9 +23,7 @@ function result = getPressureHessian(authToken,dataset,time,spatialInterpolation
 %   
 %     Output:
 %       result = (float array 9xN)
-%       rc = (integer)
-
-%rc = 0;
+%      
 
 if( size(points,1) ~= 3 | size(points,2) ~= npoints)
     
@@ -25,13 +31,11 @@ if( size(points,1) ~= 3 | size(points,2) ~= npoints)
 
 end
 
-% Get the TurbulenceService object created from:
-%createClassFromWsdl('http://turbulence.pha.jhu.edu/service/turbulence.asmx?WSDL');
+% Get the TurbulenceService object
 obj = TurbulenceService;
 
-%struct_points = {};
+% Create points struct
 struct_points = cell(npoints,1);
-
 for i = 1:npoints
   Point3.x = points(1,i);
   Point3.y = points(2,i);
@@ -39,13 +43,13 @@ for i = 1:npoints
   struct_points{i} = Point3;
 end
 
-result6 =  GetPressureHessian (obj, authToken, dataset, time, ...
+resultStruct =  GetPressureHessian (obj, authToken, dataset, time, ...
 		spatialInterpolation, ...
 		temporalInterpolation, ...
 		cell2struct({struct_points},{'Point3'}));
    
 clear struct_points;
 
-result = cellfun(@str2num,struct2cell(result6.PressureHessian));
+result = cellfun(@str2num,struct2cell(resultStruct.PressureHessian));
 
 return

@@ -1,8 +1,16 @@
-function result = getVelocityAndPressure(authToken,dataset,time,spatialInterpolation, ...
-                                                               temporalInterpolation, npoints, points)
-%GetVelocity(obj,authToken,dataset,time,spatialInterpolation,temporalInterpolation,points)
 %
-%   Spatially interpolate the velocity at a number of points for a given time.
+%  Written by:
+%  
+%  Jason Graham
+%  The Johns Hopkins University
+%  Department of Mechanical Engineering
+%  jgraha8@gmail.com
+%
+
+function result = getVelocityAndPressure(authToken,dataset,time,spatialInterpolation, ...
+                                         temporalInterpolation, npoints, points)
+%
+%     Retrieve velocity and pressure for specified 'time' and 'points'
 %   
 %     Input:
 %       authToken = (string)
@@ -15,9 +23,7 @@ function result = getVelocityAndPressure(authToken,dataset,time,spatialInterpola
 %   
 %     Output:
 %       result = (float array 4xN)
-%       rc = (integer)
-
-%rc = 0;
+%       
 
 if( size(points,1) ~= 3 | size(points,2) ~= npoints)
     
@@ -25,13 +31,11 @@ if( size(points,1) ~= 3 | size(points,2) ~= npoints)
 
 end
 
-% Get the TurbulenceService object created from:
-%createClassFromWsdl('http://turbulence.pha.jhu.edu/service/turbulence.asmx?WSDL');
+% Get the TurbulenceService object 
 obj = TurbulenceService;
 
-%struct_points = {};
+% Create points struct
 struct_points = cell(npoints,1);
-
 for i = 1:npoints
   Point3.x = points(1,i);
   Point3.y = points(2,i);
@@ -39,13 +43,13 @@ for i = 1:npoints
   struct_points{i} = Point3;
 end
 
-result4 =  GetVelocityAndPressure (obj, authToken, dataset, time, ...
+resultStruct =  GetVelocityAndPressure (obj, authToken, dataset, time, ...
 		spatialInterpolation, ...
 		temporalInterpolation, ...
 		cell2struct({struct_points},{'Point3'}));
    
 clear struct_points;
 
-result = cellfun(@str2num,struct2cell(result4.Vector3P));
+result = cellfun(@str2num,struct2cell(resultStruct.Vector3P));
 
 return
