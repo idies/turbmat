@@ -4,7 +4,7 @@
 clear all;
 close all;
 
-authkey = 'edu.jhu.pha.turbulence.testing-201003';
+authkey = 'edu.jhu.pha.turbulence.testing-201104';
 dataset = 'isotropic1024coarse';
 
 % Generates TurbulenceService object
