@@ -47,7 +47,7 @@ flavors of Mac OS X, Linux, and Windows.
 
 **** Error Handling ****
 
-Error handling his performed by the Matlab SOAP communication calls. If a 
+Error handling is performed by the Matlab SOAP communication calls. If a 
 SOAP error occurs during execution of the interface functions, all SOAP 
 error information will be display to the Matlab terminal and the execution 
 will be terminated. We do not currently provide a method for explicit error 
