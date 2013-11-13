@@ -33,7 +33,7 @@
 clear all;
 close all;
 
-authkey = 'edu.jhu.pha.turbulence.testing-201104';
+authkey = 'edu.jhu.pha.turbulence.testing-201311';
 dataset = 'channel';
 
 % ---- Temporal Interpolation Options ----
