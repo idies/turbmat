@@ -7,19 +7,10 @@
 %
 % Written by:
 %  
-% Jason Graham
+% Perry Johnson
 % The Johns Hopkins University
 % Department of Mechanical Engineering
-% jgraha8@gmail.com
-%
-
-%
-% Modified by:
-% 
-% Edo Frederix 
-% The Johns Hopkins University / Eindhoven University of Technology 
-% Department of Mechanical Engineering 
-% edofrederix@jhu.edu, edofrederix@gmail.com
+% pjohns86@jhu.edu, johnson.perry.l@gmail.com
 %
 
 %
@@ -43,7 +34,7 @@ clear all;
 close all;
 
 authkey = 'edu.jhu.pha.turbulence.testing-201104';
-dataset = 'isotropic1024coarse';
+dataset = 'channel';
 
 % ---- Temporal Interpolation Options ----
 NoTInt   = 'None' ; % No temporal interpolation
@@ -71,12 +62,6 @@ lagDt=0.0004;
 
 npoints = 10;
 
-% for box filtering
-field = 'velocity';
-dx = 2. * pi / 1024;
-filterwidth = 7. * dx;
-spacing = 4. * dx;
-
 points = zeros(3,npoints);
 result1  = zeros(npoints);
 result3  = zeros(3,npoints);
@@ -88,7 +73,7 @@ result18 = zeros(18,npoints);
 %  Set spatial locations to sample
 for p = 1:npoints
   points(1,p) = 0.20 * p;
-  points(2,p) = 0.50 * p;
+  points(2,p) = 0.05 * p;
   points(3,p) = 0.15 * p;
 end
 
@@ -99,12 +84,6 @@ end
 
 fprintf('\nRequesting velocity at %i points...\n',npoints);
 result3 =  getVelocity (authkey, dataset, time, Lag6, NoTInt, npoints, points);
-for p = 1:npoints
-  fprintf(1,'%3i: %13.6e, %13.6e, %13.6e\n', p, result3(1,p),  result3(2,p),  result3(3,p));
-end
-
-fprintf('\nRequesting forcing at %i points...\n',npoints);
-result3 =  getForce (authkey, dataset, time, Lag6, NoTInt, npoints, points);
 for p = 1:npoints
   fprintf(1,'%3i: %13.6e, %13.6e, %13.6e\n', p, result3(1,p),  result3(2,p),  result3(3,p));
 end
@@ -159,79 +138,47 @@ for p = 1:npoints
   fprintf(1,'d2pdydy=%13.6e, d2pdydz=%13.6e, d2pdzdz=%13.6e\n', result6(4,p), result6(5,p), result6(6,p));
 end
 
-fprintf('\nRequesting position at %i points, starting at time %f and ending at time %f...\n',npoints,startTime,endTime);
-result3 = getPosition(authkey, dataset, startTime, endTime, lagDt, Lag6, 10, points);
-fprintf('\nCoordinates of 10 points at startTime:\n');
-for p = 1:npoints
-    fprintf(1,'%3i: %13.6e, %13.6e, %13.6e\n', p, points(1,p),  points(2,p),  points(3,p));
-end
-fprintf('\nCoordinates of 10 points at endTime:\n');
-for p = 1:npoints
-  fprintf(1,'%3i: %13.6e, %13.6e, %13.6e\n', p, result3(1,p),  result3(2,p),  result3(3,p));
-end
-
-fprintf('\nRequesting box filter of velocity at %i points\n', npoints);
-result3 = getBoxFilter(authkey, dataset, field, time, filterwidth, npoints, points);
-for p = 1:npoints
-    fprintf(1,'%3i: Vx=%13.6e, Vy=%13.6e, Vz=%13.6e\n', p, result3(1,p), result3(2,p), result3(3,p));
-end
-
-fprintf('\nRequesting SGS velocity tensor at %i points\n', npoints);
-result6 = getBoxFilterSGS(authkey, dataset, field, time, filterwidth, npoints, points);
-for p = 1:npoints
-    fprintf(1,'%3i: xx=%13.6e, yy=%13.6e, zz=%13.6e, ', p, result6(1,p), result6(2,p), result6(3,p));
-    fprintf(1,'xy=%13.6e, xz=%13.6e, yz=%13.6e\n', result6(4,p), result6(5,p), result6(6,p));
-end
-
-fprintf('\nRequesting box filter of velocity gradient tensor at %i points\n', npoints);
-result9 = getBoxFilterGradient(authkey, dataset, field, time, filterwidth, spacing, npoints, points);
-for p = 1:npoints
-    fprintf(1,'%3i: duxdx=%13.6e, duxdy=%13.6e, duxdz=%13.6e, ', p, result9(1,p), result9(2,p), result9(3,p));
-    fprintf(1,'duydx=%13.6e, duydy=%13.6e, duydz=%13.6e, ', result9(4,p), result9(5,p), result9(6,p));
-    fprintf(1,'duzdx=%13.6e, duzdy=%13.6e, duzdz=%13.6e\n', result9(7,p), result9(8,p), result9(9,p));
-end
-
 % ///////////////////////////////////////////////////////////
 % ////////////// GENERATE A SIMPLE CONTOUR PLOT /////////////
 %////////////////////////////////////////////////////////////
 
 %  Chose a random time step
 time = 0.002 * randi(1024,1);
-spacing = 2.0*pi/1023;
+spacing = 3.0*pi/1536; % z-spacing = 1/2 x-spacing
 
 % Set domain size and position
 nx = 64;
-ny = nx;
-xoff = 2*pi*rand; 
-yoff = 2*pi*rand;
-zoff = 2*pi*rand;
-npoints = nx*ny;
+nz = nx;
+xoff = 2*spacing*randi([0,2048-nx]); 
+yoff = -0.99; % y+ = 10
+zoff = spacing*randi([0,1536-nz]);
+npoints = nx*nz;
 
 clear points;
 
 % Create surface
 x = linspace(0, (nx-1)*spacing, nx) + xoff;
-y = linspace(0, (ny-1)*spacing, ny) + yoff;
-[X Y] = meshgrid(x, y);
-points(1:2,:) = [X(:)'; Y(:)'];
-points(3,:) = zoff;
+z = linspace(0, (nz-1)*spacing, nz) + zoff;
+[X Z] = meshgrid(x, z);
+points(1,:) = X(:)';
+points(3,:) = Z(:)';
+points(2,:) = yoff;
     
 % Get the velocity at each point
-%fprintf('\nRequesting velocity at %i points...\n',npoints);
-fprintf('\nRequesting velocity at (%ix%i) points for velocity contour plot...\n',nx,ny);
+fprintf('\nRequesting velocity at (%ix%i) points for velocity contour plot...\n',nx,nz);
 result3 = getVelocity(authkey, dataset, time, Lag4, NoTInt, npoints, points);
 
-% Calculate velocity magnitude
-z = sqrt(result3(1,:).^2 + result3(2,:).^2 + result3(3,:).^2);
-Z = transpose(reshape(z, nx, ny));
+% Calculate x-velocity
+y = result3(1,:);
+Y = reshape(y, nx, nz);
 
-% Plot velocity magnitude contours
-contourf(X, Y, Z, 30, 'LineStyle', 'none');
+% Plot x-velocity contours
+contourf(X, Z, Y, 30, 'LineStyle', 'none');
 set(gca, 'FontSize', 11)
-title('Velocity magnitude', 'FontSize', 13, 'FontWeight', 'bold');
+title('x-velocity', 'FontSize', 13, 'FontWeight', 'bold');
 xlabel('x', 'FontSize', 12, 'FontWeight', 'bold');
-ylabel('y', 'FontSize', 12, 'FontWeight', 'bold');
+ylabel('z', 'FontSize', 12, 'FontWeight', 'bold');
 colorbar('FontSize', 12);
-axis([xoff max(x) yoff max(y)]);
+axis([xoff max(x) zoff max(z)]);
 set(gca, 'TickDir', 'out', 'TickLength', [.02 .02],'XMinorTick', 'on', 'YMinorTick', 'on');
 

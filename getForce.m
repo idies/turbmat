@@ -1,14 +1,47 @@
 %
-%  Written by:
-%  
-%  Jason Graham
-%  The Johns Hopkins University
-%  Department of Mechanical Engineering
-%  jgraha8@gmail.com
+% Turbmat - a Matlab library for the JHU Turbulence Database Cluster
+%   
+% get*.m, part of Turbmat
 %
 
-function result = getForce(authToken,dataset,time,spatialInterpolation, ...
-                           temporalInterpolation,npoints, points)
+%
+% Written by:
+%  
+% Jason Graham
+% The Johns Hopkins University
+% Department of Mechanical Engineering
+% jgraha8@gmail.com
+%
+
+%
+% Modified by:
+% 
+% Edo Frederix 
+% The Johns Hopkins University / Eindhoven University of Technology 
+% Department of Mechanical Engineering 
+% edofrederix@jhu.edu, edofrederix@gmail.com
+%
+
+%
+% This file is part of Turbmat.
+% 
+% Turbmat is free software: you can redistribute it and/or modify it under
+% the terms of the GNU General Public License as published by the Free
+% Software Foundation, either version 3 of the License, or (at your option)
+% any later version.
+% 
+% Turbmat is distributed in the hope that it will be useful, but WITHOUT
+% ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+% FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+% more details.
+% 
+% You should have received a copy of the GNU General Public License along
+% with Turbmat.  If not, see <http://www.gnu.org/licenses/>.
+%
+
+
+function result = getForce(authToken, dataset, time, spatialInterpolation, ...
+                           temporalInterpolation, npoints, points)
 %
 %     Retrieve force for specified 'time' and 'points'
 %   
@@ -25,8 +58,7 @@ function result = getForce(authToken,dataset,time,spatialInterpolation, ...
 %       result = (float array 3xN)
 %      
 
-
-if( size(points,1) ~= 3 | size(points,2) ~= npoints)
+if( size(points,1) ~= 3 || size(points,2) ~= npoints)
     
   error('Points not specified correctly.');
 
@@ -35,22 +67,11 @@ end
 % Get the TurbulenceService object 
 obj = TurbulenceService;
 
-% Create points struct
-struct_points = cell(npoints,1);
-for i = 1:npoints
-  Point3.x = points(1,i);
-  Point3.y = points(2,i);
-  Point3.z = points(3,i);
-  struct_points{i} = Point3;
-end
-
 resultStruct =  GetForce (obj, authToken, dataset, time, ...
 		spatialInterpolation, ...
 		temporalInterpolation, ...
-		cell2struct({struct_points},{'Point3'}));
-   
-clear struct_points;
+		points);
 
-result = cellfun(@str2num,struct2cell(resultStruct.Vector3));
+result = getVector(resultStruct.GetForceResult.Vector3);
 
 return

@@ -22,10 +22,10 @@
 %
 
 
-function GetPressureGradientResult = GetPressureGradient(obj,authToken,dataset,time,spatialInterpolation,temporalInterpolation,points)
-%GetPressureGradient(obj,authToken,dataset,time,spatialInterpolation,temporalInterpolation,points)
+function GetVectorPotentialHessianResult = GetVectorPotentialHessian(obj,authToken,dataset,time,spatialInterpolation,temporalInterpolation,points)
+%GetVectorPotentialHessian(obj,authToken,dataset,time,spatialInterpolation,temporalInterpolation,points)
 %
-%   Retrieve the pressure gradient at a fixed location
+%   Retrieve the vector potential hessian at a number of points for a given time.
 %   
 %     Input:
 %       authToken = (string)
@@ -36,7 +36,7 @@ function GetPressureGradientResult = GetPressureGradient(obj,authToken,dataset,t
 %       points = (ArrayOfPoint3)
 %   
 %     Output:
-%       GetPressureGradientResult = (ArrayOfVector3)
+%       GetVectorPotentialHessianResult = (ArrayOfVelocityHessian)
 
 % Build up the argument lists.
 data.val.authToken.name = 'authToken';
@@ -67,17 +67,17 @@ data.val.points.val.z.val = points(3,:);
 % Create the message, make the call, and convert the response into a variable.
 soapMessage = createSoapMessage( ...
     'http://turbulence.pha.jhu.edu/', ...
-    'GetPressureGradient', ...
+    'GetVectorPotentialHessian', ...
     data,'document');
 response = callSoapService( ...
     obj.endpoint, ...
-    'http://turbulence.pha.jhu.edu/GetPressureGradient', ...
+    'http://turbulence.pha.jhu.edu/GetVectorPotentialHessian', ...
     soapMessage);
-GetPressureGradientResult = parseSoapResponse(response);
+GetVectorPotentialHessianResult = parseSoapResponse(response);
 
 % Fault message handling
-if isfield(GetPressureGradientResult, 'faultstring')
+if isfield(GetVectorPotentialHessianResult, 'faultstring')
     error('faultcode: %s\nfaultstring: %s\n', ...
-        GetPressureGradientResult.faultcode, ...
-        GetPressureGradientResult.faultstring);
+        GetVectorPotentialHessianResult.faultcode, ...
+        GetVectorPotentialHessianResult.faultstring);
 end

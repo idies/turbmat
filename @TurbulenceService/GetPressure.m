@@ -21,11 +21,10 @@
 % with Turbmat.  If not, see <http://www.gnu.org/licenses/>.
 %
 
-
-function GetPressureGradientResult = GetPressureGradient(obj,authToken,dataset,time,spatialInterpolation,temporalInterpolation,points)
-%GetPressureGradient(obj,authToken,dataset,time,spatialInterpolation,temporalInterpolation,points)
+function GetPressureResult = GetPressure(obj,authToken,dataset,time,spatialInterpolation,temporalInterpolation,points)
+%GetPressure(obj,authToken,dataset,time,spatialInterpolation,temporalInterpolation,points)
 %
-%   Retrieve the pressure gradient at a fixed location
+%   Spatially interpolate the pressure field at a number of points for a given time.
 %   
 %     Input:
 %       authToken = (string)
@@ -36,7 +35,7 @@ function GetPressureGradientResult = GetPressureGradient(obj,authToken,dataset,t
 %       points = (ArrayOfPoint3)
 %   
 %     Output:
-%       GetPressureGradientResult = (ArrayOfVector3)
+%       GetPressureResult = (ArrayOfPressure)
 
 % Build up the argument lists.
 data.val.authToken.name = 'authToken';
@@ -67,17 +66,17 @@ data.val.points.val.z.val = points(3,:);
 % Create the message, make the call, and convert the response into a variable.
 soapMessage = createSoapMessage( ...
     'http://turbulence.pha.jhu.edu/', ...
-    'GetPressureGradient', ...
+    'GetPressure', ...
     data,'document');
 response = callSoapService( ...
     obj.endpoint, ...
-    'http://turbulence.pha.jhu.edu/GetPressureGradient', ...
+    'http://turbulence.pha.jhu.edu/GetPressure', ...
     soapMessage);
-GetPressureGradientResult = parseSoapResponse(response);
+GetPressureResult = parseSoapResponse(response);
 
 % Fault message handling
-if isfield(GetPressureGradientResult, 'faultstring')
+if isfield(GetPressureResult, 'faultstring')
     error('faultcode: %s\nfaultstring: %s\n', ...
-        GetPressureGradientResult.faultcode, ...
-        GetPressureGradientResult.faultstring);
+        GetPressureResult.faultcode, ...
+        GetPressureResult.faultstring);
 end

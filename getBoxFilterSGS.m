@@ -7,19 +7,10 @@
 %
 % Written by:
 %  
-% Jason Graham
+% Perry Johnson
 % The Johns Hopkins University
 % Department of Mechanical Engineering
-% jgraha8@gmail.com
-%
-
-%
-% Modified by:
-% 
-% Edo Frederix 
-% The Johns Hopkins University / Eindhoven University of Technology 
-% Department of Mechanical Engineering 
-% edofrederix@jhu.edu, edofrederix@gmail.com
+% pjohns86@jhu.edu johnson.perry.l@gmail.com
 %
 
 %
@@ -39,23 +30,23 @@
 % with Turbmat.  If not, see <http://www.gnu.org/licenses/>.
 %
 
-function result = getPressureHessian(authToken, dataset, time, spatialInterpolation, ...
-                                     temporalInterpolation, npoints, points)			     
+function result = getBoxFilterSGS(authToken, dataset, field, time, ...
+                              filterwidth, npoints, points)
 %
-%     Retrieve pressure hessian for specified 'time' and 'points'
+%     Retrieve SGS velocity tensor for specified 'time' and 'points'
 %   
 %     Input:
 %       authToken = (string)
 %       dataset = (string)
+%       field = (string)
 %       time = (float)
-%       spatialInterpolation = (string)
-%       temporalInterpolation = (string)
+%       filterwidth = (float)
 %       npoints = (integer)
-%       points = (float array 3xN)
+%       points = (float array 6xN)
 %   
 %     Output:
-%       result = (float array 9xN)
-%      
+%       GetBoxFilterResult = (float array 6xN)
+%
 
 if( size(points,1) ~= 3 || size(points,2) ~= npoints)
     
@@ -66,11 +57,10 @@ end
 % Get the TurbulenceService object
 obj = TurbulenceService;
 
-resultStruct =  GetPressureHessian (obj, authToken, dataset, time, ...
-		spatialInterpolation, ...
-		temporalInterpolation, ...
-		points);
-   
-result = getVector(resultStruct.GetPressureHessianResult.PressureHessian);
+resultStruct =  GetBoxFilterSGS (obj, authToken, dataset, field, time, ...
+		filterwidth, points);
+
+
+result = getVector(resultStruct.GetBoxFilterSGSResult.SGSTensor);
 
 return

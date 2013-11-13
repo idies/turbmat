@@ -7,19 +7,10 @@
 %
 % Written by:
 %  
-% Jason Graham
+% Perry Johnson
 % The Johns Hopkins University
 % Department of Mechanical Engineering
-% jgraha8@gmail.com
-%
-
-%
-% Modified by:
-% 
-% Edo Frederix 
-% The Johns Hopkins University / Eindhoven University of Technology 
-% Department of Mechanical Engineering 
-% edofrederix@jhu.edu, edofrederix@gmail.com
+% pjohns86@jhu.edu, johnson.perry.l@gmail.com
 %
 
 %
@@ -39,10 +30,11 @@
 % with Turbmat.  If not, see <http://www.gnu.org/licenses/>.
 %
 
-function result = getPressureHessian(authToken, dataset, time, spatialInterpolation, ...
-                                     temporalInterpolation, npoints, points)			     
+function result = getMagneticFieldGradient(authToken, dataset, time, ...
+                                           spatialInterpolation, temporalInterpolation, ...
+                                           npoints, points)			     
 %
-%     Retrieve pressure hessian for specified 'time' and 'points'
+%     Retrieve magnetic field gradient for specified 'time' and 'points'
 %   
 %     Input:
 %       authToken = (string)
@@ -55,7 +47,7 @@ function result = getPressureHessian(authToken, dataset, time, spatialInterpolat
 %   
 %     Output:
 %       result = (float array 9xN)
-%      
+%       
 
 if( size(points,1) ~= 3 || size(points,2) ~= npoints)
     
@@ -66,11 +58,11 @@ end
 % Get the TurbulenceService object
 obj = TurbulenceService;
 
-resultStruct =  GetPressureHessian (obj, authToken, dataset, time, ...
+resultStruct =  GetMagneticFieldGradient (obj, authToken, dataset, time, ...
 		spatialInterpolation, ...
 		temporalInterpolation, ...
 		points);
-   
-result = getVector(resultStruct.GetPressureHessianResult.PressureHessian);
+
+result = getVector(resultStruct.GetMagneticFieldGradientResult.VelocityGradient);
 
 return

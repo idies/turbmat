@@ -7,19 +7,10 @@
 %
 % Written by:
 %  
-% Jason Graham
+% Perry Johnson
 % The Johns Hopkins University
 % Department of Mechanical Engineering
-% jgraha8@gmail.com
-%
-
-%
-% Modified by:
-% 
-% Edo Frederix 
-% The Johns Hopkins University / Eindhoven University of Technology 
-% Department of Mechanical Engineering 
-% edofrederix@jhu.edu, edofrederix@gmail.com
+% pjohns86@jhu.edu, johnson.perry.l@gmail.com
 %
 
 %
@@ -43,7 +34,7 @@ clear all;
 close all;
 
 authkey = 'edu.jhu.pha.turbulence.testing-201104';
-dataset = 'isotropic1024coarse';
+dataset = 'mhd1024';
 
 % ---- Temporal Interpolation Options ----
 NoTInt   = 'None' ; % No temporal interpolation
@@ -157,6 +148,68 @@ result6 = getPressureHessian (authkey, dataset, time, FD4Lag4, NoTInt, npoints, 
 for p = 1:npoints
   fprintf(1,'%3i: d2pdxdx=%13.6e, d2pdxdy=%13.6e, d2pdxdz=%13.6e, ', p, result6(1,p), result6(2,p), result6(3,p));
   fprintf(1,'d2pdydy=%13.6e, d2pdydz=%13.6e, d2pdzdz=%13.6e\n', result6(4,p), result6(5,p), result6(6,p));
+end
+
+fprintf('\nRequesting magnetic field at %i points...\n',npoints);
+result3 = getMagneticField (authkey, dataset, time, Lag6, NoTInt, npoints, points);
+for p = 1:npoints
+  fprintf(1,'%3i: %13.6e, %13.6e, %13.6e\n', p, result3(1,p), result3(2,p), result3(3,p));
+end
+
+fprintf('\nRequesting magnetic field gradient at %i points...\n',npoints);
+result9 = getMagneticFieldGradient (authkey, dataset, time,  FD4Lag4, NoTInt, npoints, points);
+for p = 1:npoints
+  fprintf(1,'%3i: dbxdx=%13.6e, dbxdy=%13.6e, dbxdz=%13.6e, ', p, result9(1,p), result9(2,p), result9(3,p));
+  fprintf(1,'dbydx=%13.6e, dbydy=%13.6e, dbydz=%13.6e, ', result9(4,p), result9(5,p), result9(6,p));
+  fprintf(1,'dbzdx=%13.6e, dbzdy=%13.6e, dbzdz=%13.6e\n', result9(7,p), result9(8,p), result9(9,p));
+end
+
+fprintf('\nRequesting magnetic field hessian at %i points...\n',npoints);
+result18 = getMagneticFieldHessian (authkey, dataset, time, FD4Lag4, NoTInt, npoints, points);
+for p = 1:npoints
+  fprintf(1,'%3i: d2bxdxdx=%13.6e, d2bxdxdy=%13.6e, d2bxdxdz=%13.6e, ', p, result18(1,p), result18(2,p), result18(3,p));
+  fprintf(1,'d2bxdydy=%13.6e, d2bxdydz=%13.6e, d2bxdzdz=%13.6e, ', result18(4,p), result18(5,p), result18(6,p));
+  fprintf(1,'d2bydxdx=%13.6e, d2bydxdy=%13.6e, d2bydxdz=%13.6e, ', result18(7,p), result18(8,p), result18(9,p));
+  fprintf(1,'d2bydydy=%13.6e, d2bydydz=%13.6e, d2bydzdz=%13.6e, ', result18(10,p), result18(11,p), result18(12,p));
+  fprintf(1,'d2bzdxdx=%13.6e, d2bzdxdy=%13.6e, d2bzdxdz=%13.6e, ', result18(13,p), result18(14,p), result18(15,p));
+  fprintf(1,'d2bzdydy=%13.6e, d2bzdydz=%13.6e, d2bzdzdz=%13.6e\n', result18(16,p), result18(17,p), result18(18,p));
+end
+
+fprintf('\nRequesting magnetic field laplacian at %i points...\n',npoints);
+result3 =  getMagneticFieldLaplacian (authkey, dataset, time, FD4Lag4, NoTInt, npoints, points);
+for p = 1:npoints
+  fprintf(1,'%3i: grad2bx=%13.6e, grad2by=%13.6e, grad2bz=%13.6e\n', p, result3(1,p),  result3(2,p),  result3(3,p));
+end
+
+fprintf('\nRequesting vector potential at %i points...\n',npoints);
+result3 = getVectorPotential (authkey, dataset, time, Lag6, NoTInt, npoints, points);
+for p = 1:npoints
+  fprintf(1,'%3i: %13.6e, %13.6e, %13.6e\n', p, result3(1,p), result3(2,p), result3(3,p));
+end
+
+fprintf('\nRequesting vector potential gradient at %i points...\n',npoints);
+result9 = getVectorPotentialGradient (authkey, dataset, time,  FD4Lag4, NoTInt, npoints, points);
+for p = 1:npoints
+  fprintf(1,'%3i: daxdx=%13.6e, daxdy=%13.6e, daxdz=%13.6e, ', p, result9(1,p), result9(2,p), result9(3,p));
+  fprintf(1,'daydx=%13.6e, daydy=%13.6e, daydz=%13.6e, ', result9(4,p), result9(5,p), result9(6,p));
+  fprintf(1,'dazdx=%13.6e, dazdy=%13.6e, dazdz=%13.6e\n', result9(7,p), result9(8,p), result9(9,p));
+end
+
+fprintf('\nRequesting vector potential hessian at %i points...\n',npoints);
+result18 = getVectorPotentialHessian (authkey, dataset, time, FD4Lag4, NoTInt, npoints, points);
+for p = 1:npoints
+  fprintf(1,'%3i: d2axdxdx=%13.6e, d2axdxdy=%13.6e, d2axdxdz=%13.6e, ', p, result18(1,p), result18(2,p), result18(3,p));
+  fprintf(1,'d2axdydy=%13.6e, d2axdydz=%13.6e, d2axdzdz=%13.6e, ', result18(4,p), result18(5,p), result18(6,p));
+  fprintf(1,'d2aydxdx=%13.6e, d2aydxdy=%13.6e, d2aydxdz=%13.6e, ', result18(7,p), result18(8,p), result18(9,p));
+  fprintf(1,'d2aydydy=%13.6e, d2aydydz=%13.6e, d2aydzdz=%13.6e, ', result18(10,p), result18(11,p), result18(12,p));
+  fprintf(1,'d2azdxdx=%13.6e, d2azdxdy=%13.6e, d2azdxdz=%13.6e, ', result18(13,p), result18(14,p), result18(15,p));
+  fprintf(1,'d2azdydy=%13.6e, d2azdydz=%13.6e, d2azdzdz=%13.6e\n', result18(16,p), result18(17,p), result18(18,p));
+end
+
+fprintf('\nRequesting vector potential laplacian at %i points...\n',npoints);
+result3 =  getVectorPotentialLaplacian (authkey, dataset, time, FD4Lag4, NoTInt, npoints, points);
+for p = 1:npoints
+  fprintf(1,'%3i: grad2ax=%13.6e, grad2ay=%13.6e, grad2az=%13.6e\n', p, result3(1,p),  result3(2,p),  result3(3,p));
 end
 
 fprintf('\nRequesting position at %i points, starting at time %f and ending at time %f...\n',npoints,startTime,endTime);

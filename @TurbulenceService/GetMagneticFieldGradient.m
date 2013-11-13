@@ -22,10 +22,10 @@
 %
 
 
-function GetPressureGradientResult = GetPressureGradient(obj,authToken,dataset,time,spatialInterpolation,temporalInterpolation,points)
-%GetPressureGradient(obj,authToken,dataset,time,spatialInterpolation,temporalInterpolation,points)
+function GetMagneticFieldGradientResult = GetMagneticFieldGradient(obj,authToken,dataset,time,spatialInterpolation,temporalInterpolation,points)
+%GetMagneticFieldGradient(obj,authToken,dataset,time,spatialInterpolation,temporalInterpolation,points)
 %
-%   Retrieve the pressure gradient at a fixed location
+%   Retrieve the magnetic field gradient at a number of points for a given time.
 %   
 %     Input:
 %       authToken = (string)
@@ -36,7 +36,7 @@ function GetPressureGradientResult = GetPressureGradient(obj,authToken,dataset,t
 %       points = (ArrayOfPoint3)
 %   
 %     Output:
-%       GetPressureGradientResult = (ArrayOfVector3)
+%       GetMagneticFieldGradientResult = (ArrayOfVelocityGradient)
 
 % Build up the argument lists.
 data.val.authToken.name = 'authToken';
@@ -67,17 +67,17 @@ data.val.points.val.z.val = points(3,:);
 % Create the message, make the call, and convert the response into a variable.
 soapMessage = createSoapMessage( ...
     'http://turbulence.pha.jhu.edu/', ...
-    'GetPressureGradient', ...
+    'GetMagneticFieldGradient', ...
     data,'document');
 response = callSoapService( ...
     obj.endpoint, ...
-    'http://turbulence.pha.jhu.edu/GetPressureGradient', ...
+    'http://turbulence.pha.jhu.edu/GetMagneticFieldGradient', ...
     soapMessage);
-GetPressureGradientResult = parseSoapResponse(response);
+GetMagneticFieldGradientResult = parseSoapResponse(response);
 
 % Fault message handling
-if isfield(GetPressureGradientResult, 'faultstring')
+if isfield(GetMagneticFieldGradientResult, 'faultstring')
     error('faultcode: %s\nfaultstring: %s\n', ...
-        GetPressureGradientResult.faultcode, ...
-        GetPressureGradientResult.faultstring);
+        GetMagneticFieldGradientResult.faultcode, ...
+        GetMagneticFieldGradientResult.faultstring);
 end

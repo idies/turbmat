@@ -39,38 +39,16 @@
 % with Turbmat.  If not, see <http://www.gnu.org/licenses/>.
 %
 
-function result = getPressureHessian(authToken, dataset, time, spatialInterpolation, ...
-                                     temporalInterpolation, npoints, points)			     
-%
-%     Retrieve pressure hessian for specified 'time' and 'points'
-%   
-%     Input:
-%       authToken = (string)
-%       dataset = (string)
-%       time = (float)
-%       spatialInterpolation = (string)
-%       temporalInterpolation = (string)
-%       npoints = (integer)
-%       points = (float array 3xN)
-%   
-%     Output:
-%       result = (float array 9xN)
-%      
+function vector = getVector(s)
 
-if( size(points,1) ~= 3 || size(points,2) ~= npoints)
-    
-  error('Points not specified correctly.');
+    if ~isstruct(s)
+        error('Did not receive a structure');
+    end
 
+    keys = fieldnames(s);
+    vector = zeros(numel(keys), numel(s.(keys{1})));
+    for i = 1:numel(keys)
+        key = keys{i};
+        vector(i,:) = transpose(s.(key)(:));
+    end
 end
-
-% Get the TurbulenceService object
-obj = TurbulenceService;
-
-resultStruct =  GetPressureHessian (obj, authToken, dataset, time, ...
-		spatialInterpolation, ...
-		temporalInterpolation, ...
-		points);
-   
-result = getVector(resultStruct.GetPressureHessianResult.PressureHessian);
-
-return

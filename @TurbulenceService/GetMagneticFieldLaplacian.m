@@ -22,10 +22,10 @@
 %
 
 
-function GetPressureGradientResult = GetPressureGradient(obj,authToken,dataset,time,spatialInterpolation,temporalInterpolation,points)
-%GetPressureGradient(obj,authToken,dataset,time,spatialInterpolation,temporalInterpolation,points)
+function GetMagneticFieldLaplacianResult = GetMagneticFieldLaplacian(obj,authToken,dataset,time,spatialInterpolation,temporalInterpolation,points)
+%GetMagneticFieldLaplacian(obj,authToken,dataset,time,spatialInterpolation,temporalInterpolation,points)
 %
-%   Retrieve the pressure gradient at a fixed location
+%   Retrieve the magnetic field Laplacian at a number of points for a given time.
 %   
 %     Input:
 %       authToken = (string)
@@ -36,7 +36,7 @@ function GetPressureGradientResult = GetPressureGradient(obj,authToken,dataset,t
 %       points = (ArrayOfPoint3)
 %   
 %     Output:
-%       GetPressureGradientResult = (ArrayOfVector3)
+%       GetMagneticFieldLaplacianResult = (ArrayOfVector3)
 
 % Build up the argument lists.
 data.val.authToken.name = 'authToken';
@@ -67,17 +67,17 @@ data.val.points.val.z.val = points(3,:);
 % Create the message, make the call, and convert the response into a variable.
 soapMessage = createSoapMessage( ...
     'http://turbulence.pha.jhu.edu/', ...
-    'GetPressureGradient', ...
+    'GetMagneticFieldLaplacian', ...
     data,'document');
 response = callSoapService( ...
     obj.endpoint, ...
-    'http://turbulence.pha.jhu.edu/GetPressureGradient', ...
+    'http://turbulence.pha.jhu.edu/GetMagneticFieldLaplacian', ...
     soapMessage);
-GetPressureGradientResult = parseSoapResponse(response);
+GetMagneticFieldLaplacianResult = parseSoapResponse(response);
 
 % Fault message handling
-if isfield(GetPressureGradientResult, 'faultstring')
+if isfield(GetMagneticFieldLaplacianResult, 'faultstring')
     error('faultcode: %s\nfaultstring: %s\n', ...
-        GetPressureGradientResult.faultcode, ...
-        GetPressureGradientResult.faultstring);
+        GetMagneticFieldLaplacianResult.faultcode, ...
+        GetMagneticFieldLaplacianResult.faultstring);
 end

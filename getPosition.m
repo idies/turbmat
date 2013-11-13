@@ -14,15 +14,6 @@
 %
 
 %
-% Modified by:
-% 
-% Edo Frederix 
-% The Johns Hopkins University / Eindhoven University of Technology 
-% Department of Mechanical Engineering 
-% edofrederix@jhu.edu, edofrederix@gmail.com
-%
-
-%
 % This file is part of Turbmat.
 % 
 % Turbmat is free software: you can redistribute it and/or modify it under
@@ -39,23 +30,27 @@
 % with Turbmat.  If not, see <http://www.gnu.org/licenses/>.
 %
 
-function result = getPressureHessian(authToken, dataset, time, spatialInterpolation, ...
-                                     temporalInterpolation, npoints, points)			     
+function result = getPosition(authToken, dataset, ...
+    startTime, endTime, dt, ...
+    spatialInterpolation, ...
+    npoints, points)
+
 %
-%     Retrieve pressure hessian for specified 'time' and 'points'
+%     Track fluid particles along Lagrangian trajectories
 %   
 %     Input:
 %       authToken = (string)
 %       dataset = (string)
-%       time = (float)
+%       startTime = (float)
+%       endTime = (float)
+%       dt = (float)
 %       spatialInterpolation = (string)
-%       temporalInterpolation = (string)
 %       npoints = (integer)
 %       points = (float array 3xN)
 %   
 %     Output:
-%       result = (float array 9xN)
-%      
+%       result = (float array 3xN)
+%
 
 if( size(points,1) ~= 3 || size(points,2) ~= npoints)
     
@@ -66,11 +61,10 @@ end
 % Get the TurbulenceService object
 obj = TurbulenceService;
 
-resultStruct =  GetPressureHessian (obj, authToken, dataset, time, ...
-		spatialInterpolation, ...
-		temporalInterpolation, ...
+resultStruct =  GetPosition (obj, authToken, dataset, startTime, ...
+		endTime, dt, spatialInterpolation, ...
 		points);
-   
-result = getVector(resultStruct.GetPressureHessianResult.PressureHessian);
+
+result = getVector(resultStruct.GetPositionResult.Point3);
 
 return
