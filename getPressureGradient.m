@@ -54,7 +54,7 @@ function result = getPressureGradient(authToken, dataset, time, spatialInterpola
 %       points = (float array 3xN)
 %   
 %     Output:
-%       result = (float array 9xN)
+%       result = (float array 3xN)
 %      
 
 if( size(points,1) ~= 3 || size(points,2) ~= npoints)

@@ -54,7 +54,7 @@ function result = getPressureHessian(authToken, dataset, time, spatialInterpolat
 %       points = (float array 3xN)
 %   
 %     Output:
-%       result = (float array 9xN)
+%       result = (float array 6xN)
 %      
 
 if( size(points,1) ~= 3 || size(points,2) ~= npoints)

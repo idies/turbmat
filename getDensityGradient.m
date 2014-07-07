@@ -7,19 +7,10 @@
 %
 % Written by:
 %  
-% Jason Graham
+% Kalin Kanov
 % The Johns Hopkins University
-% Department of Mechanical Engineering
-% jgraha8@gmail.com
-%
-
-%
-% Modified by:
-% 
-% Edo Frederix 
-% The Johns Hopkins University / Eindhoven University of Technology 
-% Department of Mechanical Engineering 
-% edofrederix@jhu.edu, edofrederix@gmail.com
+% Department of Computer Science
+% kalin@cs.jhu.edu
 %
 
 %
@@ -54,7 +45,7 @@ function result = getDensityGradient(authToken, dataset, time, spatialInterpolat
 %       points = (float array 3xN)
 %   
 %     Output:
-%       result = (float array 9xN)
+%       result = (float array 3xN)
 %      
 
 if( size(points,1) ~= 3 || size(points,2) ~= npoints)
