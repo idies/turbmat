@@ -77,6 +77,16 @@ dx = 2. * pi / 1024;
 filterwidth = 7. * dx;
 spacing = 4. * dx;
 
+% for thresholding
+threshold_field = 'vorticity';
+threshold = 4.8;
+X = int32(0); 
+Y = int32(0);
+Z = int32(0);
+Xwidth = int32(16);
+Ywidth = int32(16);
+Zwidth = int32(16);
+
 points = zeros(3,npoints);
 result1  = zeros(npoints);
 result3  = zeros(3,npoints);
@@ -204,6 +214,12 @@ for p = 1:npoints
     fprintf(1,'duzdx=%13.6e, duzdy=%13.6e, duzdz=%13.6e\n', result9(7,p), result9(8,p), result9(9,p));
 end
 
+fprintf('\nRequesting vorticity threshold...\n');
+threshold_array =  getThreshold (authkey, dataset, threshold_field, time, threshold, FD4NoInt, X, Y, Z, Xwidth, Ywidth, Zwidth);
+for p = 1:length(threshold_array)
+  fprintf(1,'(%3i, %3i, %3i): %13.6e\n', threshold_array(1,p),  threshold_array(2,p),  threshold_array(3,p), threshold_array(4,p));
+end
+
 % ///////////////////////////////////////////////////////////
 % ////////////// GENERATE A SIMPLE CONTOUR PLOT /////////////
 %////////////////////////////////////////////////////////////
@@ -229,16 +245,16 @@ y = linspace(0, (ny-1)*spacing, ny) + yoff;
 points(1:2,:) = [X(:)'; Y(:)'];
 points(3,:) = zoff;
     
-% Get the velocity at each point
-%fprintf('\nRequesting velocity at %i points...\n',npoints);
-fprintf('\nRequesting density at (%ix%i) points for velocity contour plot...\n',nx,ny);
+% Get the density at each point
+%fprintf('\nRequesting density at %i points...\n',npoints);
+fprintf('\nRequesting density at (%ix%i) points for density contour plot...\n',nx,ny);
 result1 = getDensity(authkey, dataset, time, Lag4, NoTInt, npoints, points);
 
-% Calculate velocity magnitude
+% Calculate density magnitude
 z = result1(1,:);
 Z = transpose(reshape(z, nx, ny));
 
-% Plot velocity magnitude contours
+% Plot density magnitude contours
 contourf(X, Y, Z, 30, 'LineStyle', 'none');
 set(gca, 'FontSize', 11)
 title('Density', 'FontSize', 13, 'FontWeight', 'bold');

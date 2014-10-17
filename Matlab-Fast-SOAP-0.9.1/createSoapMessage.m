@@ -113,6 +113,9 @@ function xml = createXML(data)
             case 'double'
                 xml = [xml wrapXML(name, type, wrapXML(wrap, '', num2str(val(:), '%1.10f')))];
 
+            case {'int8', 'int16', 'int32', 'int64'}
+                xml = [xml wrapXML(name, type, wrapXML(wrap, '', int2str(val(:))))];
+
             case 'cell'
                 for i=1:numel(val)
                     if isstruct(val{i})
@@ -123,6 +126,8 @@ function xml = createXML(data)
                     xmlStep = merge(xmlStep, wrapXML(wrap, '', createXML(valStep)));
                 end
                 xml = merge(xml, wrapXML(name, type, xmlStep));
+            otherwise
+                warning('Unexpected type. Web-service call may not succeed.')
         end
     end
 end

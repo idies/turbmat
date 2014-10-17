@@ -77,6 +77,16 @@ dx = 2. * pi / 1024;
 filterwidth = 7. * dx;
 spacing = 4. * dx;
 
+% for thresholding
+threshold_field = 'vorticity';
+threshold = 110.0;
+X = int32(0); 
+Y = int32(0);
+Z = int32(0);
+Xwidth = int32(16);
+Ywidth = int32(16);
+Zwidth = int32(16);
+
 points = zeros(3,npoints);
 result1  = zeros(npoints);
 result3  = zeros(3,npoints);
@@ -189,6 +199,12 @@ for p = 1:npoints
     fprintf(1,'%3i: duxdx=%13.6e, duxdy=%13.6e, duxdz=%13.6e, ', p, result9(1,p), result9(2,p), result9(3,p));
     fprintf(1,'duydx=%13.6e, duydy=%13.6e, duydz=%13.6e, ', result9(4,p), result9(5,p), result9(6,p));
     fprintf(1,'duzdx=%13.6e, duzdy=%13.6e, duzdz=%13.6e\n', result9(7,p), result9(8,p), result9(9,p));
+end
+
+fprintf('\nRequesting vorticity threshold...\n');
+threshold_array =  getThreshold (authkey, dataset, threshold_field, time, threshold, FD4NoInt, X, Y, Z, Xwidth, Ywidth, Zwidth);
+for p = 1:length(threshold_array)
+  fprintf(1,'(%3i, %3i, %3i): %13.6e\n', threshold_array(1,p),  threshold_array(2,p),  threshold_array(3,p), threshold_array(4,p));
 end
 
 % ///////////////////////////////////////////////////////////

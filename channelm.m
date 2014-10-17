@@ -60,6 +60,16 @@ startTime=0.364;
 endTime=0.376;
 lagDt=0.0004; 
 
+% for thresholding
+threshold_field = 'vorticity';
+threshold = 10.0;
+X = int32(0); 
+Y = int32(0);
+Z = int32(0);
+Xwidth = int32(16);
+Ywidth = int32(16);
+Zwidth = int32(16);
+
 npoints = 10;
 
 points = zeros(3,npoints);
@@ -136,6 +146,12 @@ result6 = getPressureHessian (authkey, dataset, time, FD4Lag4, NoTInt, npoints, 
 for p = 1:npoints
   fprintf(1,'%3i: d2pdxdx=%13.6e, d2pdxdy=%13.6e, d2pdxdz=%13.6e, ', p, result6(1,p), result6(2,p), result6(3,p));
   fprintf(1,'d2pdydy=%13.6e, d2pdydz=%13.6e, d2pdzdz=%13.6e\n', result6(4,p), result6(5,p), result6(6,p));
+end
+
+fprintf('\nRequesting vorticity threshold...\n');
+threshold_array =  getThreshold (authkey, dataset, threshold_field, time, threshold, FD4NoInt, X, Y, Z, Xwidth, Ywidth, Zwidth);
+for p = 1:length(threshold_array)
+  fprintf(1,'(%3i, %3i, %3i): %13.6e\n', threshold_array(1,p),  threshold_array(2,p),  threshold_array(3,p), threshold_array(4,p));
 end
 
 % ///////////////////////////////////////////////////////////
