@@ -36,11 +36,11 @@ for i = 1:numel(a)
 end
 
 if ~set
-    error('Could not find Matlab-Fast-SOAP package. PMake sure to include a copy of Matlab-Fast-SOAP in the Turbmat path.');
+    error('Could not find Matlab-Fast-SOAP package. Please make sure to include a copy of Matlab-Fast-SOAP in the Turbmat path.');
 end
 
 
-obj.endpoint = 'http://turbulence.pha.jhu.edu/service/turbulence.asmx';
-obj.wsdl = 'http://turbulence.pha.jhu.edu/service/turbulence.asmx?WSDL';
+obj.endpoint = 'http://test.turbulence.pha.jhu.edu/service/turbulence.asmx';
+obj.wsdl = 'http://test.turbulence.pha.jhu.edu/service/turbulence.asmx?WSDL';
 
 obj = class(obj,'TurbulenceService');

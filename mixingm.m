@@ -42,24 +42,31 @@
 clear all;
 close all;
 
-authkey = 'edu.jhu.pha.turbulence.testing-201311';
+authkey = 'edu.jhu.pha.turbulence.testing-201406';
 dataset = 'mixing';
 
 % ---- Temporal Interpolation Options ----
 NoTInt   = 'None' ; % No temporal interpolation
 PCHIPInt = 'PCHIP'; % Piecewise cubic Hermit interpolation in time
 
-% ---- Spatial Interpolation Flags for getVelocity &amp; getVelocityAndPressure ----
+% ---- Spatial Interpolation Flags for getVelocity & getVelocityAndPressure ----
 NoSInt = 'None'; % No spatial interpolation
 Lag4   = 'Lag4'; % 4th order Lagrangian interpolation in space
 Lag6   = 'Lag6'; % 6th order Lagrangian interpolation in space
 Lag8   = 'Lag8'; % 8th order Lagrangian interpolation in space
 
-% ---- Spatial Differentiation &amp; Interpolation Flags for getVelocityGradient &amp; getPressureGradient ----
+% ---- Spatial Differentiation & Interpolation Flags for getVelocityGradient & getPressureGradient ----
 FD4NoInt = 'None_Fd4' ; % 4th order finite differential scheme for grid values, no spatial interpolation
 FD6NoInt = 'None_Fd6' ; % 6th order finite differential scheme for grid values, no spatial interpolation
 FD8NoInt = 'None_Fd8' ; % 8th order finite differential scheme for grid values, no spatial interpolation
 FD4Lag4  = 'Fd4Lag4'  ; % 4th order finite differential scheme for grid values, 4th order Lagrangian interpolation in space
+
+% ---- Spline interpolation and differentiation Flags for getVelocity,
+% getPressure, getVelocityGradient, getPressureGradient,
+% getVelocityHessian, getPressureHessian
+M1Q4   = 'M1Q4'; % Splines with smoothness 1 (3rd order) over 4 data points.
+M2Q8   = 'M2Q8'; % Splines with smoothness 1 (3rd order) over 4 data points.
+M2Q14   = 'M2Q14'; % Splines with smoothness 1 (3rd order) over 4 data points.
 
 %  Set time step to sample
 time = 5.0;
@@ -73,6 +80,8 @@ npoints = 10;
 
 % for box filtering
 field = 'velocity';
+scalar_fields = 'pd'; % two scalar fields ("p" and "d")
+vector_scalar_fields = 'up'; % a vector and a scalar field ("u" and "p")
 dx = 2. * pi / 1024;
 filterwidth = 7. * dx;
 spacing = 4. * dx;
@@ -199,11 +208,23 @@ for p = 1:npoints
     fprintf(1,'%3i: Vx=%13.6e, Vy=%13.6e, Vz=%13.6e\n', p, result3(1,p), result3(2,p), result3(3,p));
 end
 
-fprintf('\nRequesting SGS velocity tensor at %i points\n', npoints);
-result6 = getBoxFilterSGS(authkey, dataset, field, time, filterwidth, npoints, points);
+fprintf('\nRequesting SGS symmetric tensor for velocity at %i points\n', npoints);
+result6 = getBoxFilterSGSsymtensor(authkey, dataset, field, time, filterwidth, npoints, points);
 for p = 1:npoints
     fprintf(1,'%3i: xx=%13.6e, yy=%13.6e, zz=%13.6e, ', p, result6(1,p), result6(2,p), result6(3,p));
     fprintf(1,'xy=%13.6e, xz=%13.6e, yz=%13.6e\n', result6(4,p), result6(5,p), result6(6,p));
+end
+
+fprintf('\nRequesting SGS for two scalar fields at %i points\n', npoints);
+result1 = getBoxFilterSGSscalar(authkey, dataset, scalar_fields, time, filterwidth, npoints, points);
+for p = 1:npoints
+    fprintf(1,'%3i: %13.6e\n', p, result1(p));
+end
+
+fprintf('\nRequesting SGS for a vector and a scalar field at %i points\n', npoints);
+result3 = getBoxFilterSGSvector(authkey, dataset, vector_scalar_fields, time, filterwidth, npoints, points);
+for p = 1:npoints
+    fprintf(1,'%3i: xx=%13.6e, yx=%13.6e, zx=%13.6e\n', p, result3(1,p), result3(2,p), result3(3,p));
 end
 
 fprintf('\nRequesting box filter of velocity gradient tensor at %i points\n', npoints);

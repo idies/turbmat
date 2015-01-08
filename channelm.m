@@ -33,24 +33,31 @@
 clear all;
 close all;
 
-authkey = 'edu.jhu.pha.turbulence.testing-201311';
+authkey = 'edu.jhu.pha.turbulence.testing-201406';
 dataset = 'channel';
 
 % ---- Temporal Interpolation Options ----
 NoTInt   = 'None' ; % No temporal interpolation
 PCHIPInt = 'PCHIP'; % Piecewise cubic Hermit interpolation in time
 
-% ---- Spatial Interpolation Flags for getVelocity &amp; getVelocityAndPressure ----
+% ---- Spatial Interpolation Flags for getVelocity & getVelocityAndPressure ----
 NoSInt = 'None'; % No spatial interpolation
 Lag4   = 'Lag4'; % 4th order Lagrangian interpolation in space
 Lag6   = 'Lag6'; % 6th order Lagrangian interpolation in space
 Lag8   = 'Lag8'; % 8th order Lagrangian interpolation in space
 
-% ---- Spatial Differentiation &amp; Interpolation Flags for getVelocityGradient &amp; getPressureGradient ----
+% ---- Spatial Differentiation & Interpolation Flags for getVelocityGradient & getPressureGradient ----
 FD4NoInt = 'None_Fd4' ; % 4th order finite differential scheme for grid values, no spatial interpolation
 FD6NoInt = 'None_Fd6' ; % 6th order finite differential scheme for grid values, no spatial interpolation
 FD8NoInt = 'None_Fd8' ; % 8th order finite differential scheme for grid values, no spatial interpolation
 FD4Lag4  = 'Fd4Lag4'  ; % 4th order finite differential scheme for grid values, 4th order Lagrangian interpolation in space
+
+% ---- Spline interpolation and differentiation Flags for getVelocity,
+% getPressure, getVelocityGradient, getPressureGradient,
+% getVelocityHessian, getPressureHessian
+M1Q4   = 'M1Q4'; % Splines with smoothness 1 (3rd order) over 4 data points.
+M2Q8   = 'M2Q8'; % Splines with smoothness 1 (3rd order) over 4 data points.
+M2Q14   = 'M2Q14'; % Splines with smoothness 1 (3rd order) over 4 data points.
 
 %  Set time step to sample
 time = 0.364;
@@ -62,7 +69,7 @@ lagDt=0.0004;
 
 % for thresholding
 threshold_field = 'vorticity';
-threshold = 10.0;
+threshold = 130.0;
 X = int32(0); 
 Y = int32(0);
 Z = int32(0);
