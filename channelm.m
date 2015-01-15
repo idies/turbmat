@@ -55,9 +55,9 @@ FD4Lag4  = 'Fd4Lag4'  ; % 4th order finite differential scheme for grid values, 
 % ---- Spline interpolation and differentiation Flags for getVelocity,
 % getPressure, getVelocityGradient, getPressureGradient,
 % getVelocityHessian, getPressureHessian
-M1Q4   = 'M1Q4'; % Splines with smoothness 1 (3rd order) over 4 data points.
-M2Q8   = 'M2Q8'; % Splines with smoothness 1 (3rd order) over 4 data points.
-M2Q14   = 'M2Q14'; % Splines with smoothness 1 (3rd order) over 4 data points.
+M1Q4   = 'M1Q4'; % Splines with smoothness 1 (3rd order) over 4 data points. Not applicable for Hessian.
+M2Q8   = 'M2Q8'; % Splines with smoothness 2 (5th order) over 8 data points.
+M2Q14   = 'M2Q14'; % Splines with smoothness 2 (5th order) over 14 data points.
 
 %  Set time step to sample
 time = 0.364;
