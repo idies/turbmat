@@ -7,10 +7,10 @@
 %
 % Written by:
 %  
-% Perry Johnson
+% Kalin Kanov
 % The Johns Hopkins University
-% Department of Mechanical Engineering
-% pjohns86@jhu.edu johnson.perry.l@gmail.com
+% Department of Computer Science
+% kalin@cs.jhu.edu
 %
 
 %
