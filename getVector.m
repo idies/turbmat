@@ -46,9 +46,17 @@ function vector = getVector(s)
     end
 
     keys = fieldnames(s);
-    vector = zeros(numel(keys), numel(s.(keys{1})));
-    for i = 1:numel(keys)
-        key = keys{i};
-        vector(i,:) = transpose(s.(key)(:));
+    if( ischar(s.(keys{1})) )
+        vector = zeros(numel(keys), numel(str2double(s.(keys{1}))));
+        for i = 1:numel(keys)
+            key = keys{i};
+            vector(i,:) = str2double(transpose(s.(key)(:)));
+        end
+    else
+        vector = zeros(numel(keys), numel(s.(keys{1})));
+        for i = 1:numel(keys)
+            key = keys{i};
+            vector(i,:) = transpose(s.(key)(:));
+        end
     end
 end
