@@ -182,7 +182,7 @@ clear points;
 % Create surface
 x = linspace(0, (nx-1)*spacing, nx) + xoff;
 z = linspace(0, (nz-1)*spacing, nz) + zoff;
-[X Z] = meshgrid(x, z);
+[Z X] = meshgrid(z, x);
 points(1,:) = X(:)';
 points(3,:) = Z(:)';
 points(2,:) = yoff;
