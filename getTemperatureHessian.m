@@ -7,13 +7,20 @@
 %
 % Written by:
 %  
-% Perry Johnson
+% Zhao Wu
 % The Johns Hopkins University
 % Department of Mechanical Engineering
-% pjohns86@jhu.edu, johnson.perry.l@gmail.com
+% zhao.wu@jhu.edu
 %
 
-% 2019: Modified by Zhao Wu
+%
+% Modified by:
+% 
+% Edo Frederix 
+% The Johns Hopkins University / Eindhoven University of Technology 
+% Department of Mechanical Engineering 
+% edofrederix@jhu.edu, edofrederix@gmail.com
+%
 
 %
 % This file is part of Turbmat.
@@ -32,39 +39,38 @@
 % with Turbmat.  If not, see <http://www.gnu.org/licenses/>.
 %
 
-function result = getThreshold(authToken, dataset, field, time, threshold, ...
-                               spatialInterpolation, x_start, y_start, z_start, ...
-                              x_end, y_end, z_end)
+function result = getTemperatureHessian(authToken, dataset, time, spatialInterpolation, ...
+                                     temporalInterpolation, npoints, points)			     
 %
-%     Retrieve the grid locations with norms for the specified field above 
-%     the given threshold for the given time.
+%     Retrieve Temperature hessian for specified 'time' and 'points'
 %   
 %     Input:
 %       authToken = (string)
 %       dataset = (string)
-%       field = (string)
 %       time = (float)
-%       threshold = (float)
-%       spatialInterpolation = (SpatialInterpolation)
-%       X = (int)
-%       Y = (int)
-%       Z = (int)
-%       Xwidth = (int)
-%       Ywidth = (int)
-%       Zwidth = (int)
+%       spatialInterpolation = (string)
+%       temporalInterpolation = (string)
+%       npoints = (integer)
+%       points = (float array 3xN)
 %   
 %     Output:
-%       result = (ArrayOfThresholdInfo)
-%       
+%       result = (float array 6xN)
+%      
+
+if( size(points,1) ~= 3 || size(points,2) ~= npoints)
+    
+  error('Points not specified correctly.');
+
+end
 
 % Get the TurbulenceService object
 obj = TurbulenceService;
 
-resultStruct =  GetThreshold (obj, authToken, dataset, field, time, ...
-                              threshold, spatialInterpolation, ...
-                              x_start, y_start, z_start, ...
-                              x_end, y_end, z_end);
-
-result = getVector(resultStruct.GetThresholdResult.ThresholdInfo);
+resultStruct =  GetTemperatureHessian (obj, authToken, dataset, time, ...
+		spatialInterpolation, ...
+		temporalInterpolation, ...
+		points);
+   
+result = getVector(resultStruct.GetTemperatureHessianResult.PressureHessian);
 
 return

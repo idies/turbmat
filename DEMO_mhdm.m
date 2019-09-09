@@ -7,20 +7,14 @@
 %
 % Written by:
 %  
-% Jason Graham
+% Perry Johnson
 % The Johns Hopkins University
 % Department of Mechanical Engineering
-% jgraha8@gmail.com
+% pjohns86@jhu.edu, johnson.perry.l@gmail.com
 %
 
-%
-% Modified by:
-% 
-% Edo Frederix 
-% The Johns Hopkins University / Eindhoven University of Technology 
-% Department of Mechanical Engineering 
-% edofrederix@jhu.edu, edofrederix@gmail.com
-%
+% 2017: Modified by Zhao Wu and Rohit Ravoori, adding getInvariant
+% 2019: Modified by Zhao Wu for getThreshold function
 
 %
 % This file is part of Turbmat.
@@ -43,7 +37,7 @@ clear all;
 close all;
 
 authkey = 'edu.jhu.pha.turbulence.testing-201406';
-dataset = 'isotropic1024coarse';
+dataset = 'mhd1024';
 
 % ---- Temporal Interpolation Options ----
 NoTInt   = 'None' ; % No temporal interpolation
@@ -73,8 +67,8 @@ time = 0.364;
 
 % getPosition integration settings
 startTime=0.364;
-endTime=0.376;
-lagDt=0.0004; 
+endTime=0.414;
+lagDt=0.005; 
 
 npoints = 10;
 
@@ -82,22 +76,24 @@ npoints = 10;
 field = 'velocity';
 scalar_fields = 'pp'; % two scalar fields ("p" and "p")
 vector_scalar_fields = 'up'; % a vector and a scalar field ("u" and "p")
+vector_fields = 'ub'; % two vector fields ("u" and "b")
 dx = 2. * pi / 1024;
 filterwidth = 7. * dx;
 spacing = 4. * dx;
 
 % for thresholding
 threshold_field = 'vorticity';
-threshold = 110.0;
-X = int32(0); 
-Y = int32(0);
-Z = int32(0);
-Xwidth = int32(16);
-Ywidth = int32(16);
-Zwidth = int32(16);
+threshold = 65.0;
+x_start = int32(1); 
+y_start = int32(1);
+z_start = int32(1);
+x_end = int32(16); 
+y_end = int32(16);
+z_end = int32(16);
 
 points = zeros(3,npoints);
 result1  = zeros(npoints);
+result2  = zeros(2,npoints);
 result3  = zeros(3,npoints);
 result4  = zeros(4,npoints);
 result6  = zeros(6,npoints);
@@ -178,6 +174,68 @@ for p = 1:npoints
   fprintf(1,'d2pdydy=%13.6e, d2pdydz=%13.6e, d2pdzdz=%13.6e\n', result6(4,p), result6(5,p), result6(6,p));
 end
 
+fprintf('\nRequesting magnetic field at %i points...\n',npoints);
+result3 = getMagneticField (authkey, dataset, time, Lag6, NoTInt, npoints, points);
+for p = 1:npoints
+  fprintf(1,'%3i: %13.6e, %13.6e, %13.6e\n', p, result3(1,p), result3(2,p), result3(3,p));
+end
+
+fprintf('\nRequesting magnetic field gradient at %i points...\n',npoints);
+result9 = getMagneticFieldGradient (authkey, dataset, time,  FD4Lag4, NoTInt, npoints, points);
+for p = 1:npoints
+  fprintf(1,'%3i: dbxdx=%13.6e, dbxdy=%13.6e, dbxdz=%13.6e, ', p, result9(1,p), result9(2,p), result9(3,p));
+  fprintf(1,'dbydx=%13.6e, dbydy=%13.6e, dbydz=%13.6e, ', result9(4,p), result9(5,p), result9(6,p));
+  fprintf(1,'dbzdx=%13.6e, dbzdy=%13.6e, dbzdz=%13.6e\n', result9(7,p), result9(8,p), result9(9,p));
+end
+
+fprintf('\nRequesting magnetic field hessian at %i points...\n',npoints);
+result18 = getMagneticFieldHessian (authkey, dataset, time, FD4Lag4, NoTInt, npoints, points);
+for p = 1:npoints
+  fprintf(1,'%3i: d2bxdxdx=%13.6e, d2bxdxdy=%13.6e, d2bxdxdz=%13.6e, ', p, result18(1,p), result18(2,p), result18(3,p));
+  fprintf(1,'d2bxdydy=%13.6e, d2bxdydz=%13.6e, d2bxdzdz=%13.6e, ', result18(4,p), result18(5,p), result18(6,p));
+  fprintf(1,'d2bydxdx=%13.6e, d2bydxdy=%13.6e, d2bydxdz=%13.6e, ', result18(7,p), result18(8,p), result18(9,p));
+  fprintf(1,'d2bydydy=%13.6e, d2bydydz=%13.6e, d2bydzdz=%13.6e, ', result18(10,p), result18(11,p), result18(12,p));
+  fprintf(1,'d2bzdxdx=%13.6e, d2bzdxdy=%13.6e, d2bzdxdz=%13.6e, ', result18(13,p), result18(14,p), result18(15,p));
+  fprintf(1,'d2bzdydy=%13.6e, d2bzdydz=%13.6e, d2bzdzdz=%13.6e\n', result18(16,p), result18(17,p), result18(18,p));
+end
+
+fprintf('\nRequesting magnetic field laplacian at %i points...\n',npoints);
+result3 =  getMagneticFieldLaplacian (authkey, dataset, time, FD4Lag4, NoTInt, npoints, points);
+for p = 1:npoints
+  fprintf(1,'%3i: grad2bx=%13.6e, grad2by=%13.6e, grad2bz=%13.6e\n', p, result3(1,p),  result3(2,p),  result3(3,p));
+end
+
+fprintf('\nRequesting vector potential at %i points...\n',npoints);
+result3 = getVectorPotential (authkey, dataset, time, Lag6, NoTInt, npoints, points);
+for p = 1:npoints
+  fprintf(1,'%3i: %13.6e, %13.6e, %13.6e\n', p, result3(1,p), result3(2,p), result3(3,p));
+end
+
+fprintf('\nRequesting vector potential gradient at %i points...\n',npoints);
+result9 = getVectorPotentialGradient (authkey, dataset, time,  FD4Lag4, NoTInt, npoints, points);
+for p = 1:npoints
+  fprintf(1,'%3i: daxdx=%13.6e, daxdy=%13.6e, daxdz=%13.6e, ', p, result9(1,p), result9(2,p), result9(3,p));
+  fprintf(1,'daydx=%13.6e, daydy=%13.6e, daydz=%13.6e, ', result9(4,p), result9(5,p), result9(6,p));
+  fprintf(1,'dazdx=%13.6e, dazdy=%13.6e, dazdz=%13.6e\n', result9(7,p), result9(8,p), result9(9,p));
+end
+
+fprintf('\nRequesting vector potential hessian at %i points...\n',npoints);
+result18 = getVectorPotentialHessian (authkey, dataset, time, FD4Lag4, NoTInt, npoints, points);
+for p = 1:npoints
+  fprintf(1,'%3i: d2axdxdx=%13.6e, d2axdxdy=%13.6e, d2axdxdz=%13.6e, ', p, result18(1,p), result18(2,p), result18(3,p));
+  fprintf(1,'d2axdydy=%13.6e, d2axdydz=%13.6e, d2axdzdz=%13.6e, ', result18(4,p), result18(5,p), result18(6,p));
+  fprintf(1,'d2aydxdx=%13.6e, d2aydxdy=%13.6e, d2aydxdz=%13.6e, ', result18(7,p), result18(8,p), result18(9,p));
+  fprintf(1,'d2aydydy=%13.6e, d2aydydz=%13.6e, d2aydzdz=%13.6e, ', result18(10,p), result18(11,p), result18(12,p));
+  fprintf(1,'d2azdxdx=%13.6e, d2azdxdy=%13.6e, d2azdxdz=%13.6e, ', result18(13,p), result18(14,p), result18(15,p));
+  fprintf(1,'d2azdydy=%13.6e, d2azdydz=%13.6e, d2azdzdz=%13.6e\n', result18(16,p), result18(17,p), result18(18,p));
+end
+
+fprintf('\nRequesting vector potential laplacian at %i points...\n',npoints);
+result3 =  getVectorPotentialLaplacian (authkey, dataset, time, FD4Lag4, NoTInt, npoints, points);
+for p = 1:npoints
+  fprintf(1,'%3i: grad2ax=%13.6e, grad2ay=%13.6e, grad2az=%13.6e\n', p, result3(1,p),  result3(2,p),  result3(3,p));
+end
+
 fprintf('\nRequesting position at %i points, starting at time %f and ending at time %f...\n',npoints,startTime,endTime);
 result3 = getPosition(authkey, dataset, startTime, endTime, lagDt, Lag6, 10, points);
 fprintf('\nCoordinates of 10 points at startTime:\n');
@@ -195,7 +253,7 @@ for p = 1:npoints
     fprintf(1,'%3i: Vx=%13.6e, Vy=%13.6e, Vz=%13.6e\n', p, result3(1,p), result3(2,p), result3(3,p));
 end
 
-fprintf('\nRequesting SGS symmetric tensor for velocity at %i points\n', npoints);
+fprintf('\nRequesting SGS symmetric tensor at %i points\n', npoints);
 result6 = getBoxFilterSGSsymtensor(authkey, dataset, field, time, filterwidth, npoints, points);
 for p = 1:npoints
     fprintf(1,'%3i: xx=%13.6e, yy=%13.6e, zz=%13.6e, ', p, result6(1,p), result6(2,p), result6(3,p));
@@ -214,6 +272,14 @@ for p = 1:npoints
     fprintf(1,'%3i: xx=%13.6e, yx=%13.6e, zx=%13.6e\n', p, result3(1,p), result3(2,p), result3(3,p));
 end
 
+fprintf('\nRequesting SGS tensor for two vector fields at %i points\n', npoints);
+result9 = getBoxFilterSGStensor(authkey, dataset, vector_fields, time, filterwidth, npoints, points);
+for p = 1:npoints
+    fprintf(1,'%3i: xx=%13.6e, xy=%13.6e, xz=%13.6e, ', p, result9(1,p), result9(2,p), result9(3,p));
+    fprintf(1,'yx=%13.6e, yy=%13.6e, yz=%13.6e, ', result9(4,p), result9(5,p), result9(6,p));
+    fprintf(1,'zx=%13.6e, zy=%13.6e, zz=%13.6e\n', result9(7,p), result9(8,p), result9(9,p));
+end
+
 fprintf('\nRequesting box filter of velocity gradient tensor at %i points\n', npoints);
 result9 = getBoxFilterGradient(authkey, dataset, field, time, filterwidth, spacing, npoints, points);
 for p = 1:npoints
@@ -223,9 +289,15 @@ for p = 1:npoints
 end
 
 fprintf('\nRequesting vorticity threshold...\n');
-threshold_array =  getThreshold (authkey, dataset, threshold_field, time, threshold, FD4NoInt, X, Y, Z, Xwidth, Ywidth, Zwidth);
+threshold_array =  getThreshold (authkey, dataset, threshold_field, time, threshold, FD4NoInt, x_start, y_start, z_start, x_end, y_end, z_end);
 for p = 1:length(threshold_array)
   fprintf(1,'(%3i, %3i, %3i): %13.6e\n', threshold_array(1,p),  threshold_array(2,p),  threshold_array(3,p), threshold_array(4,p));
+end
+
+fprintf('\nRequesting invariant at %i points...\n',npoints);
+result2 =  getInvariant (authkey, dataset, time, FD4Lag4, NoTInt, npoints, points);
+for p = 1:npoints
+  fprintf(1,'%3i: S2=%13.6e, O2=%13.6e\n', p, result2(1,p),  result2(2,p));
 end
 
 % ///////////////////////////////////////////////////////////
@@ -260,7 +332,7 @@ result3 = getVelocity(authkey, dataset, time, Lag4, NoTInt, npoints, points);
 
 % Calculate velocity magnitude
 z = sqrt(result3(1,:).^2 + result3(2,:).^2 + result3(3,:).^2);
-Z = transpose(reshape(z, nx, ny));
+Z = reshape(z, ny, nx);
 
 % Plot velocity magnitude contours
 contourf(X, Y, Z, 30, 'LineStyle', 'none');

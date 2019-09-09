@@ -30,7 +30,7 @@
 % with Turbmat.  If not, see <http://www.gnu.org/licenses/>.
 %
 
-function GetRawVelocityResult = GetRawVelocity(obj,authToken,dataset,time,X,Y,Z,Xwidth,Ywidth,Zwidth)
+function GetTemperatureResult = GetTemperature(obj,authToken,dataset,time,spatialInterpolation,temporalInterpolation,points)
 %GetPressure(obj,authToken,dataset,time,spatialInterpolation,temporalInterpolation,points)
 %
 %   Spatially interpolate the pressure field at a number of points for a given time.
@@ -56,39 +56,36 @@ data.val.dataset.type = '{http://www.w3.org/2001/XMLSchema}string';
 data.val.time.name = 'time';
 data.val.time.val = time;
 data.val.time.type = '{http://www.w3.org/2001/XMLSchema}float';
-data.val.X.name = 'X';
-data.val.X.val = X;
-data.val.X.type = '{http://www.w3.org/2001/XMLSchema}int';
-data.val.Y.name = 'Y';
-data.val.Y.val = Y;
-data.val.Y.type = '{http://www.w3.org/2001/XMLSchema}int';
-data.val.Z.name = 'Z';
-data.val.Z.val = Z;
-data.val.Z.type = '{http://www.w3.org/2001/XMLSchema}int';
-data.val.Xwidth.name = 'Xwidth';
-data.val.Xwidth.val = Xwidth;
-data.val.Xwidth.type = '{http://www.w3.org/2001/XMLSchema}int';
-data.val.Ywidth.name = 'Ywidth';
-data.val.Ywidth.val = Ywidth;
-data.val.Ywidth.type = '{http://www.w3.org/2001/XMLSchema}int';
-data.val.Zwidth.name = 'Zwidth';
-data.val.Zwidth.val = Zwidth;
-data.val.Zwidth.type = '{http://www.w3.org/2001/XMLSchema}int';
+data.val.spatialInterpolation.name = 'spatialInterpolation';
+data.val.spatialInterpolation.val = spatialInterpolation;
+data.val.spatialInterpolation.type = '{http://turbulence.pha.jhu.edu/}SpatialInterpolation';
+data.val.temporalInterpolation.name = 'temporalInterpolation';
+data.val.temporalInterpolation.val = temporalInterpolation;
+data.val.temporalInterpolation.type = '{http://turbulence.pha.jhu.edu/}TemporalInterpolation';
+data.val.points.name = 'points';
+data.val.points.wrap = 'Point3';
+data.val.points.parallel = 1;
+data.val.points.val.x.name = 'x';
+data.val.points.val.x.val = points(1,:);
+data.val.points.val.y.name = 'y';
+data.val.points.val.y.val = points(2,:);
+data.val.points.val.z.name = 'z';
+data.val.points.val.z.val = points(3,:);
 
 % Create the message, make the call, and convert the response into a variable.
 soapMessage = createSoapMessage( ...
     'http://turbulence.pha.jhu.edu/', ...
-    'GetRawVelocity', ...
+    'GetTemperature', ...
     data,'document');
 response = callSoapService( ...
     obj.endpoint, ...
-    'http://turbulence.pha.jhu.edu/GetRawVelocity', ...
+    'http://turbulence.pha.jhu.edu/GetTemperature', ...
     soapMessage);
-GetRawVelocityResult = parseSoapResponse(response);
+GetTemperatureResult = parseSoapResponse(response);
 
 % Fault message handling
-if isfield(GetRawVelocityResult, 'faultstring')
+if isfield(GetTemperatureResult, 'faultstring')
     error('faultcode: %s\nfaultstring: %s\n', ...
-        GetRawVelocityResult.faultcode, ...
-        GetRawVelocityResult.faultstring);
+        GetTemperatureResult.faultcode, ...
+        GetTemperatureResult.faultstring);
 end
