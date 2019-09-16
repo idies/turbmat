@@ -13,6 +13,8 @@
 % jgraha8@gmail.com
 %
 
+% 2019: Modified by Zhao Wu for getThreshold function
+
 %
 % Modified by:
 % 
@@ -21,6 +23,8 @@
 % Department of Computer Science
 % kalin@cs.jhu.edu
 %
+
+% 2017: Modified by Zhao Wu and Rohit Ravoori, adding getInvariant
 
 %
 % This file is part of Turbmat.
@@ -73,8 +77,8 @@ time = 5.0;
 
 % getPosition integration settings
 startTime=5.0;
-endTime=5.08;
-lagDt=0.02; 
+endTime=5.40;
+lagDt=0.04; 
 
 npoints = 10;
 
@@ -89,15 +93,16 @@ spacing = 4. * dx;
 % for thresholding
 threshold_field = 'vorticity';
 threshold = 4.8;
-X = int32(0); 
-Y = int32(0);
-Z = int32(0);
-Xwidth = int32(16);
-Ywidth = int32(16);
-Zwidth = int32(16);
+x_start = int32(1); 
+y_start = int32(1);
+z_start = int32(1);
+x_end = int32(16); 
+y_end = int32(16);
+z_end = int32(16);
 
 points = zeros(3,npoints);
 result1  = zeros(npoints);
+result2  = zeros(2,npoints);
 result3  = zeros(3,npoints);
 result4  = zeros(4,npoints);
 result6  = zeros(6,npoints);
@@ -236,9 +241,15 @@ for p = 1:npoints
 end
 
 fprintf('\nRequesting vorticity threshold...\n');
-threshold_array =  getThreshold (authkey, dataset, threshold_field, time, threshold, FD4NoInt, X, Y, Z, Xwidth, Ywidth, Zwidth);
+threshold_array =  getThreshold (authkey, dataset, threshold_field, time, threshold, FD4NoInt, x_start, y_start, z_start, x_end, y_end, z_end);
 for p = 1:length(threshold_array)
   fprintf(1,'(%3i, %3i, %3i): %13.6e\n', threshold_array(1,p),  threshold_array(2,p),  threshold_array(3,p), threshold_array(4,p));
+end
+
+fprintf('\nRequesting invariant at %i points...\n',npoints);
+result2 =  getInvariant (authkey, dataset, time, FD4Lag4, NoTInt, npoints, points);
+for p = 1:npoints
+  fprintf(1,'%3i: S2=%13.6e, O2=%13.6e\n', p, result2(1,p),  result2(2,p));
 end
 
 % ///////////////////////////////////////////////////////////
@@ -273,7 +284,7 @@ result1 = getDensity(authkey, dataset, time, Lag4, NoTInt, npoints, points);
 
 % Calculate density magnitude
 z = result1(1,:);
-Z = transpose(reshape(z, nx, ny));
+Z = reshape(z, ny, nx);
 
 % Plot density magnitude contours
 contourf(X, Y, Z, 30, 'LineStyle', 'none');

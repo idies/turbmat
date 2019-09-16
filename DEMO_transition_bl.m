@@ -7,10 +7,10 @@
 %
 % Written by:
 %  
-% Perry Johnson
+% Zhao Wu
 % The Johns Hopkins University
 % Department of Mechanical Engineering
-% pjohns86@jhu.edu, johnson.perry.l@gmail.com
+% zhao.wu@jhu.edu
 %
 
 %
@@ -34,7 +34,7 @@ clear all;
 close all;
 
 authkey = 'edu.jhu.pha.turbulence.testing-201406';
-dataset = 'channel';
+dataset = 'transition_bl';
 
 % ---- Temporal Interpolation Options ----
 NoTInt   = 'None' ; % No temporal interpolation
@@ -43,44 +43,34 @@ PCHIPInt = 'PCHIP'; % Piecewise cubic Hermit interpolation in time
 % ---- Spatial Interpolation Flags for getVelocity & getVelocityAndPressure ----
 NoSInt = 'None'; % No spatial interpolation
 Lag4   = 'Lag4'; % 4th order Lagrangian interpolation in space
-Lag6   = 'Lag6'; % 6th order Lagrangian interpolation in space
-Lag8   = 'Lag8'; % 8th order Lagrangian interpolation in space
 
 % ---- Spatial Differentiation & Interpolation Flags for getVelocityGradient & getPressureGradient ----
 FD4NoInt = 'None_Fd4' ; % 4th order finite differential scheme for grid values, no spatial interpolation
-FD6NoInt = 'None_Fd6' ; % 6th order finite differential scheme for grid values, no spatial interpolation
-FD8NoInt = 'None_Fd8' ; % 8th order finite differential scheme for grid values, no spatial interpolation
 FD4Lag4  = 'Fd4Lag4'  ; % 4th order finite differential scheme for grid values, 4th order Lagrangian interpolation in space
-
-% ---- Spline interpolation and differentiation Flags for getVelocity,
-% getPressure, getVelocityGradient, getPressureGradient,
-% getVelocityHessian, getPressureHessian
-M1Q4   = 'M1Q4'; % Splines with smoothness 1 (3rd order) over 4 data points. Not applicable for Hessian.
-M2Q8   = 'M2Q8'; % Splines with smoothness 2 (5th order) over 8 data points.
-M2Q14   = 'M2Q14'; % Splines with smoothness 2 (5th order) over 14 data points.
 
 %  Set time step to sample
 time = 0.364;
 
 % getPosition integration settings
 startTime=0.364;
-endTime=0.376;
-lagDt=0.0004; 
+endTime=2.864;
+lagDt=0.25; 
 
 % for thresholding
 threshold_field = 'vorticity';
-threshold = 130.0;
-X = int32(0); 
-Y = int32(0);
-Z = int32(0);
-Xwidth = int32(16);
-Ywidth = int32(16);
-Zwidth = int32(16);
+threshold = 1.76;
+x_start = int32(1); 
+y_start = int32(1);
+z_start = int32(1);
+x_end = int32(16); 
+y_end = int32(16);
+z_end = int32(16);
 
 npoints = 10;
 
 points = zeros(3,npoints);
 result1  = zeros(npoints);
+result2  = zeros(2,npoints);
 result3  = zeros(3,npoints);
 result4  = zeros(4,npoints);
 result6  = zeros(6,npoints);
@@ -89,7 +79,7 @@ result18 = zeros(18,npoints);
 
 %  Set spatial locations to sample
 for p = 1:npoints
-  points(1,p) = 0.20 * p;
+  points(1,p) = 0.20 * p + 30.21850;
   points(2,p) = 0.05 * p;
   points(3,p) = 0.15 * p;
 end
@@ -100,13 +90,13 @@ for p = 1:npoints
 end
 
 fprintf('\nRequesting velocity at %i points...\n',npoints);
-result3 =  getVelocity (authkey, dataset, time, Lag6, NoTInt, npoints, points);
+result3 =  getVelocity (authkey, dataset, time, Lag4, NoTInt, npoints, points);
 for p = 1:npoints
   fprintf(1,'%3i: %13.6e, %13.6e, %13.6e\n', p, result3(1,p),  result3(2,p),  result3(3,p));
 end
 
 fprintf('\nRequesting velocity and pressure at %i points...\n',npoints);
-result4 = getVelocityAndPressure (authkey, dataset, time, Lag6, NoTInt, npoints, points);
+result4 = getVelocityAndPressure (authkey, dataset, time, Lag4, NoTInt, npoints, points);
 for p = 1:npoints
   fprintf(1,'%3i: %13.6e, %13.6e, %13.6e, %13.6e\n', p, result4(1,p),  result4(2,p),  result4(3,p), result4(4,p));
 end
@@ -137,7 +127,7 @@ for p = 1:npoints
 end
 
 fprintf('\nRequesting pressure at %i points...\n',npoints);
-result1 = getPressure (authkey, dataset, time, Lag6, NoTInt, npoints, points);
+result1 = getPressure (authkey, dataset, time, Lag4, NoTInt, npoints, points);
 for p = 1:npoints
   fprintf(1,'%3i: %13.6e\n', p, result1(p));
 end
@@ -155,10 +145,27 @@ for p = 1:npoints
   fprintf(1,'d2pdydy=%13.6e, d2pdydz=%13.6e, d2pdzdz=%13.6e\n', result6(4,p), result6(5,p), result6(6,p));
 end
 
+fprintf('\nRequesting position at %i points, starting at time %f and ending at time %f...\n',npoints,startTime,endTime);
+result3 = getPosition(authkey, dataset, startTime, endTime, lagDt, Lag4, npoints, points);
+fprintf('\nCoordinates of 10 points at startTime:\n');
+for p = 1:npoints
+    fprintf(1,'%3i: %13.6e, %13.6e, %13.6e\n', p, points(1,p),  points(2,p),  points(3,p));
+end
+fprintf('\nCoordinates of 10 points at endTime:\n');
+for p = 1:npoints
+  fprintf(1,'%3i: %13.6e, %13.6e, %13.6e\n', p, result3(1,p),  result3(2,p),  result3(3,p));
+end
+
 fprintf('\nRequesting vorticity threshold...\n');
-threshold_array =  getThreshold (authkey, dataset, threshold_field, time, threshold, FD4NoInt, X, Y, Z, Xwidth, Ywidth, Zwidth);
+threshold_array =  getThreshold (authkey, dataset, threshold_field, time, threshold, FD4NoInt, x_start, y_start, z_start, x_end, y_end, z_end);
 for p = 1:length(threshold_array)
   fprintf(1,'(%3i, %3i, %3i): %13.6e\n', threshold_array(1,p),  threshold_array(2,p),  threshold_array(3,p), threshold_array(4,p));
+end
+
+fprintf('\nRequesting invariant at %i points...\n',npoints);
+result2 =  getInvariant (authkey, dataset, time, FD4Lag4, NoTInt, npoints, points);
+for p = 1:npoints
+  fprintf(1,'%3i: S2=%13.6e, O2=%13.6e\n', p, result2(1,p),  result2(2,p));
 end
 
 % ///////////////////////////////////////////////////////////
@@ -166,15 +173,15 @@ end
 %////////////////////////////////////////////////////////////
 
 %  Chose a random time step
-time = 0.002 * randi(1024,1);
-spacing = 3.0*pi/1536; % z-spacing = 1/2 x-spacing
+time = 0.25 * randi(4700,1);
+spacing = 0.1;
 
 % Set domain size and position
-nx = 64;
-nz = nx;
-xoff = 2*spacing*randi([0,2048-nx]); 
-yoff = -0.99; % y+ = 10
-zoff = spacing*randi([0,1536-nz]);
+nx = 128;
+nz = 32;
+xoff = 3*spacing*randi([0,3300-nx]) + 30.21850; 
+yoff = 2;
+zoff = spacing*randi([0,2048-nz]);
 npoints = nx*nz;
 
 clear points;
@@ -182,7 +189,7 @@ clear points;
 % Create surface
 x = linspace(0, (nx-1)*spacing, nx) + xoff;
 z = linspace(0, (nz-1)*spacing, nz) + zoff;
-[Z X] = meshgrid(z, x);
+[X Z] = meshgrid(x, z);
 points(1,:) = X(:)';
 points(3,:) = Z(:)';
 points(2,:) = yoff;
@@ -193,7 +200,7 @@ result3 = getVelocity(authkey, dataset, time, Lag4, NoTInt, npoints, points);
 
 % Calculate x-velocity
 y = result3(1,:);
-Y = reshape(y, nx, nz);
+Y = reshape(y, nz, nx);
 
 % Plot x-velocity contours
 contourf(X, Z, Y, 30, 'LineStyle', 'none');
