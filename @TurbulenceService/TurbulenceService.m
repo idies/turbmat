@@ -40,7 +40,7 @@ if ~set
 end
 
 
-obj.endpoint = 'http://turbulence.pha.jhu.edu/service/turbulence.asmx';
-obj.wsdl = 'http://turbulence.pha.jhu.edu/service/turbulence.asmx?WSDL';
+obj.endpoint = 'https://turbulence.pha.jhu.edu/service/turbulence.asmx';
+obj.wsdl = 'https://turbulence.pha.jhu.edu/service/turbulence.asmx?WSDL';
 
 obj = class(obj,'TurbulenceService');
